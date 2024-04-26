@@ -4,13 +4,13 @@
 variable "computer_name" {
   type        = string
   description = "computer_name"
-  default     = "ryszard-vm-ub"
+  default     = "mojski-vm-ub"
 }
 
 variable "username" {
   type        = string
   description = "user name"
-  default     = "ryszard"
+  default     = "mojski"
 }
 
 variable "publicsshkey" {
@@ -31,7 +31,7 @@ variable "vmsize" {
   default     = "Standard_B2s"
 }
 
-# Standard_B1s cpu:1, memory: 1GB, storage: 5GG SSD # very small for learning purposes
+# Standard_B1s cpu:1, memory: 1GB, storage: 5GG SSD # very small fro learning purposes
 # Standard_B2s cpu:2, memory: 4GB, storage: 8GG SSD # bigger for develpment
 
 variable "sku" {

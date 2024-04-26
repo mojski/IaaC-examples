@@ -2,7 +2,7 @@
 variable "computer_name" {
   type        = string
   description = "computer_name"
-  default     = "mojskiVM"
+  default     = "mojskiVM-deb"
 }
 
 variable "username" {
