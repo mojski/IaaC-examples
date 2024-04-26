@@ -1,0 +1,8 @@
+[servers]
+52.236.34.153 ansible_ssh_user=mojski
+[servers:vars]
+the_number_of_the_beast=666
+docker_username="user"
+docker_token="token"
+working_directory=/opt/webhook
+webhook_id="monday"

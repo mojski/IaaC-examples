@@ -1,0 +1,14 @@
+- hosts: "servers"
+  name: run script
+  tasks:
+    - name: Copy shell script to remote server
+      copy:
+        src: script.sh
+        dest: /tmp/script.sh
+        mode: 0755
+    - name: Run shell script on remote server
+      shell: sh /tmp/script.sh
+    - name: Remove shell script from remote server
+      file:
+        path: /tmp/script.sh
+        state: absent

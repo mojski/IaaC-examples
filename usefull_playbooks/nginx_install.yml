@@ -1,0 +1,19 @@
+- hosts: "servers"
+  name: install nginx
+  tasks:
+    - name: Update and upgrade apt packages
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+    - name: Update and upgrade apt packages
+      become: true
+      apt: name=nginx state=latest
+    - name: start nginx
+      service:
+          name: nginx
+          state: started
+    - name: enable nginx
+      become: yes
+      command: |
+        sudo systemctl enable nginx

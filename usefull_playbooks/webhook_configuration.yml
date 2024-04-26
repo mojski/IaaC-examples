@@ -1,0 +1,72 @@
+- hosts: "servers"
+  name: install nginx
+  tasks:
+    - name: Update and upgrade apt packages
+      become: yes
+      apt:
+        upgrade: yes
+        update_cache: yes
+    - name: Update and upgrade apt packages
+      become: yes
+      command: apt install webhook -y
+    - name: Create directory
+      become: yes
+      command: mkdir /opt/webhook
+    - name: Creating an empty file
+      become: yes
+      file:
+        path: /opt/webhook/redeploy.sh
+        state: touch
+    - name: Creating an empty file
+      become: yes
+      file:
+        path: /opt/webhook/redeploy.json
+        state: touch
+    - name: Creating an empty file
+      become: yes
+      file:
+        path: /opt/webhook/webhook.service
+        state: touch
+    - name: add redeploy script
+      become: yes
+      blockinfile:
+        dest:  /opt/webhook/redeploy.sh
+        block: |
+          #!/bin/sh
+          docker login -u "{{dockerusername}}" docker.io --password "{{dockertoken}}"
+          docker compose down
+          docker compose pull
+          docker compose up -d
+    - name: add webhook json file
+      become: yes
+      blockinfile: 
+        dest:  /opt/webhook/redeploy.json
+        block: |
+          [
+            {
+              "id": "{{webhookid}}",
+              "execute-command": "/home/webhook/redeploy.sh",
+              "command-working-directory": "/home/webhook",
+              "response-message": "OK"
+            }
+          ]
+    - name: create service unit file
+      become: yes
+      blockinfile: 
+        dest:  /opt/webhook/webhook.service
+        block: |
+          [Unit]
+          Description=Webhook Service
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=root
+          Group=root
+          ExecStart=/opt/webhook/webhook -hooks=/opt/webhook/redeploy.json -hotreload=false -ip=127.0.0.1 -port=5090 -secure=false -verbose=true -debug=false
+          WorkingDirectory=/opt/webhook
+          KillMode=process
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+- hosts: "servers"
+  name: add users
+  tasks:
+    - name: include users
+      include_vars:
+        file: users.yml
+    - name: looping users
+      become: yes
+      command: |
+        adduser {{item.user_name}} -c "{{item.user_full_name}}" -m -G wheel
+        mkdir -p /home/{{item.user_name}}/.ssh
+        echo "{{item.user_keys}}" >> /home/{{item.user_name}}/.ssh/authorized_keys
+        chown -R {{item.user_name}}:{{item.user_name}} /home/{{item.user_name}} && chmod 700 /home/{{item.user_name}}/.ssh && chmod 600 /home/{{item.user_name}}/.ssh/authorized_keys
+      with_items: "{{users}}"
