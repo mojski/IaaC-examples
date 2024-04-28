@@ -1,5 +1,5 @@
 [servers]
-52.236.34.153 ansible_ssh_user=mojski
+0.0.0.0  ansible_ssh_user=user_name
 [servers:vars]
 the_number_of_the_beast=666
 docker_username="user"
