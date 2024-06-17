@@ -1,8 +1,8 @@
 users:
-  - user_name: "user1"
-    user_full_name: "User one"
-    user_keys: "user one ssh public key"
-  - user_name: "user2"
-    user_full_name: "User two"
-    user_keys: "user two ssh public key"
+  - name: user1
+    key: "ssh-rsa AAAAB3Nza... user1@example.com"
+  - name: user2
+    key: "ssh-ed25519 AAAAC3Nza... user2@example.com"
+  - name: user3
+    key: "ssh-rsa AAAAB3Nza... user3@example.com"
   
