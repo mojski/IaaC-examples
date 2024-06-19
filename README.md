@@ -99,7 +99,7 @@ ansible-playbook <<playbook_name.yml>> -i inventory
 > [!CAUTION]
 > Playbooks are written for Debian 11. They probably won't work on other distributions.
 
-## Usefull links
+## Useful links
 
 [winget instructions](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=winget)
 
