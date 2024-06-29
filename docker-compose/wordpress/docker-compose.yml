@@ -1,0 +1,36 @@
+version: "1.0"
+services:
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: lucek
+      WORDPRESS_DB_PASSWORD: lucek
+      WORDPRESS_DB_NAME: localdb
+    volumes:
+      - wordpress:/var/www/html
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: localdb
+      MYSQL_USER: lucek
+      MYSQL_PASSWORD: lucek
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+
+volumes:
+  wordpress:
+  db:
+
+
+# connextions string:
+# "Data Source=localhost;Initial Catalog=<dbName>;User Id=SA;Password=veryStrongPassword!23;Trust Server Certificate=true"
+
+#rabbitmq http://localhost:15672/  user&pass: guest
+
