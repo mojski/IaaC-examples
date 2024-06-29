@@ -1,0 +1,15 @@
+﻿version: "3.9"
+services:
+    mssql:
+        image: mcr.microsoft.com/mssql/server:2019-CU11-ubuntu-20.04
+        ports:
+            - "1433:1433"
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=veryStrongPassword!23
+            - MSSQL_PID=Express
+            - MSSQL_COLLATION=Polish_CI_AS
+        volumes:
+            - articles-mssql-test:/var/opt/mssql
+volumes:
+    articles-mssql-test:

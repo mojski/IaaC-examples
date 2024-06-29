@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://gitlab.com/polskieradio/cms/infrastructure/-/blob/master/local/docker-compose.yml
+HostUrl=https://gitlab.com/polskieradio/cms/infrastructure/-/raw/master/local/docker-compose.yml?inline=false
