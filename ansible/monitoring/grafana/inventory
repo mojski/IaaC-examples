@@ -1,4 +1,0 @@
-[servers]
-13.74.158.52 ansible_ssh_user=mojski
-[servers:vars]
-grafana_release=https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz
