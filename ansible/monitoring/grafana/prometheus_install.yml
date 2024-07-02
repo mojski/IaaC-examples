@@ -48,10 +48,10 @@
       become: yes
       blockinfile: 
         dest: /etc/prometheus/prometheus.yml
-        block: |
-          - job_name: node
-            static_configs:
-              - targets: ['localhost:9100']
+        block: |2
+            - job_name: node
+              static_configs:
+                - targets: ['localhost:9100']
 
     - name: Create Prometheus systemd service
       copy:

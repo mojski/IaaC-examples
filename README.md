@@ -2,6 +2,7 @@
 - 02/2024 initial: Ansible workshop resources for beginners
 - 14/04/2024 adding a terraform script for creating debian vm for programming and basics of ansible scripts
 - 16/04/2024 Terraform script refactor and script for ubuntu 22.04
+- 29.06/2024 add monitoring with grafana, prometheus and node exporter playbooks, add seq docker-compose.yml
 
 ## Terraform and Ansible
 
