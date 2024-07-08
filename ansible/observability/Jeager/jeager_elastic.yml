@@ -1,0 +1,17 @@
+# Playbook for Ubuntu 20.04
+# Adapted from https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-20-04
+- name: install jaeger
+  hosts: servers
+  become: yes
+  tasks:
+    - name: Download jaeger from github release
+      get_url:
+        url: https://github.com/jaegertracing/jaeger/releases/download/v1.58.0/jaeger-1.58.0-linux-amd64.tar.gz
+
+    - name: set as exe
+      shell: |
+        chmod +x jaeger-all-in-one-linux-amd64
+
+    - name: move to bin
+      shell: |
+        mv jaeger-all-in-one-linux-amd64 /usr/local/bin/jaeger-all-in-one-linux-amd64

@@ -1,0 +1,53 @@
+- name: MariaDB install
+  hosts: servers
+  become: true
+  tasks:
+    - name: Update APT package index
+      apt:
+        update_cache: yes
+
+    - name: Install MariaDB server
+      apt:
+        name: mariadb-server
+        state: present
+
+    - name: Start and enable MariaDB service
+      systemd:
+        name: mariadb
+        state: started
+        enabled: yes
+        
+    - name: mariaDB secure installation
+      become: yes
+      expect:
+        command: 'sudo mysql_secure_installation'
+        responses:
+          password: "{{root_password}}"
+          '.*password for root.*': '' # 'Enter current password for root \(enter for none\)\:'
+          '.*root password.*' : 'N' # 'Set root password? \[Y\/n\]'
+          '.*anonymous.*' : 'Y' # 'Remove anonymous users? \[Y\/n\] '
+          '.*root login.*' : 'Y' # 'Disallow root login remotely? \[Y\/n\]'
+          '.*test database.*' : 'Y' # 'Remove test database and access to it? \[Y\/n\]'
+          '.*privilege tables.*' : 'Y' # 'Reload privilege tables now? \[Y\/n\]'
+- name: configure mariadb
+  hosts: servers
+  tasks:
+    - name: bind ports
+      become: yes
+      blockinfile:
+        dest: /etc/mysql/my.cnf
+        block: |
+          [mysqld]
+          bind-address=0.0.0.0
+- name: restart maria db
+  hosts: servers
+  tasks:
+    - name: restart maria db
+      become: yes
+      command: systemctl restart mariadb
+
+# totally remove:
+# systemctl stop mariadb
+# sudo apt-get purge mariadb-*
+# rm -r /var/log/mariadb
+# rm -r /var/lib/mariadb

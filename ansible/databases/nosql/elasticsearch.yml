@@ -1,0 +1,44 @@
+# Playbook for Ubuntu 20.04
+# Adapted from https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-20-04
+- name: install elastic search
+  hosts: servers
+  become: yes
+  tasks:
+    - name: install curl
+      command: |
+        apt-get install gnupg curl -y
+
+    - name: import elastic search public GPG key and save to keyring
+      shell: |
+        curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+
+    - name: update source list
+      shell: |
+        echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
+    
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    
+    - name: Install elastic search
+      apt:
+        name: elasticsearch
+        state: present
+        update_cache: yes
+    
+    - name: set elastic search config yaml file
+      lineinfile:
+        path: /etc/elasticsearch/elasticsearch.yml
+        line: "network.host: localhost"
+    
+    - name: Ensure elasticsearch is running and and enabled to start automatically on reboots
+      service: 
+        name: elasticsearch 
+        enabled: yes
+        state: started
+
+# totally remove:
+# systemctl stop elasticsearch.service
+# apt-get remove --purge elasticsearch
+# rm -rf /etc/elasticsearch
+# rm -rf /var/lib/elasticsearch
