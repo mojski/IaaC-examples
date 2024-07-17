@@ -52,3 +52,18 @@
         name: node_exporter
         enabled: yes
         state: started
+    - name: add node exporter configuration
+      become: yes
+      blockinfile: 
+        dest: /etc/prometheus/prometheus.yml
+        marker: "# {mark} ANSIBLE MANAGED BLOCK node exporter"
+        block: |2
+            - job_name: node_export
+              static_configs:
+                - targets: ['localhost:9100']
+
+    - name: restart prometheus
+      systemd:
+        name: prometheus
+        enabled: yes
+        state: restarted

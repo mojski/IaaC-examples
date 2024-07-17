@@ -44,15 +44,7 @@
       command: >
         mv /tmp/prometheus-2.44.0.linux-amd64/prometheus.yml /etc/prometheus/
       become: yes
-    - name: add node exporter configuration
-      become: yes
-      blockinfile: 
-        dest: /etc/prometheus/prometheus.yml
-        block: |2
-            - job_name: node
-              static_configs:
-                - targets: ['localhost:9100']
-
+      
     - name: Create Prometheus systemd service
       copy:
         dest: /etc/systemd/system/prometheus.service

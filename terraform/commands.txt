@@ -1,0 +1,7 @@
+# create
+terraform plan -out main.tfplan
+terraform apply "main.tfplan"
+
+# destroy
+terraform plan -destroy -out main.destroy.tfplan
+terraform apply "main.destroy.tfplan"
