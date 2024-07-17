@@ -1,5 +1,5 @@
 ---
-- name: run cadvisor on linux machine
+- name: run cAdvisor on linux machine
   hosts: all
   become: yes
   tasks:
