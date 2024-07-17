@@ -1,4 +1,6 @@
-# change in etc/grafana/grafana.ini
+## Set Grafana:
 
-nginx.conf and grafana.ini are files that actually works with serve grafana ui with nginx, 
-if something with playbooks went wrong use this files. 
+- run prometheus_install playbook
+- run node_exporter_install or/and mysql_exporter_install playbooks 
+- run grafana_install playbook
+- check if your grafana instance working on address your_host_ip/mo

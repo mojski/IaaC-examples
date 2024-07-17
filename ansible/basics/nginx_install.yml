@@ -6,7 +6,7 @@
       apt:
         upgrade: yes
         update_cache: yes
-    - name: Update and upgrade apt packages
+    - name: install nginx
       become: true
       apt: name=nginx state=latest
     - name: start nginx

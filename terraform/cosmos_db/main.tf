@@ -9,8 +9,8 @@ resource "azurerm_cosmosdb_account" "example" {
   resource_group_name       = azurerm_resource_group.example.name
   offer_type                = "Standard"
   kind                      = "GlobalDocumentDB"
-  enable_automatic_failover = false
-  enable_free_tier          = true
+  automatic_failover_enabled = false
+  free_tier_enabled          = true
   geo_location {
     location          = var.location
     failover_priority = 0
@@ -37,8 +37,8 @@ resource "azurerm_cosmosdb_sql_container" "example" {
   resource_group_name   = azurerm_resource_group.example.name
   account_name          = azurerm_cosmosdb_account.example.name
   database_name         = azurerm_cosmosdb_sql_database.main.name
-  partition_key_path    = "/definition/id"
   partition_key_version = 1
+  partition_key_path    = "/definition/id"
   throughput            = var.throughput
 
   indexing_policy {
