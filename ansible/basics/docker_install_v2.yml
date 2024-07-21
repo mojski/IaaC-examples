@@ -1,0 +1,49 @@
+#https://docs.docker.com/engine/install/ubuntu/
+- hosts: "servers"
+  name: install docker
+  tasks:
+    - name: update apt
+      become: yes
+      command: |
+        apt update
+
+    - name: install curl certificates
+      become: yes
+      command: |
+        apt-get install ca-certificates curl
+
+    - name: install keyrings
+      become: yes
+      command: |
+        install -m 0755 -d /etc/apt/keyrings
+
+    - name: download gpg keys
+      become: yes
+      command: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+    - name: change mode to 
+      become: yes
+      command: |
+        chmod a+r /etc/apt/keyrings/docker.asc
+
+    - name: add docker repo to apt
+      shell: |
+        echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+          $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    - name: install docker
+      become: yes
+      command: |
+        apt install docker.io -y
+    - name: install docker-compose
+      become: yes
+      command: |
+        apt install docker-compose -y
+
+    - name: enable using docker to none root user
+      become: yes
+      command: |
+        chmod "{{the_number_of_the_beast}}" /var/run/docker.sock
