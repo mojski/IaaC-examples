@@ -1,0 +1,53 @@
+- hosts: "servers"
+  name: install certbot and secure basic
+  tasks:
+    - name: update apt
+      become: yes
+      command: |
+        apt update
+    
+    - name: Install Python and dependencies
+      become: yes
+      apt:
+        name:
+          - python3
+          - python3-venv
+          - libaugeas0
+        state: present
+        update_cache: yes
+    
+    - name: install certbot
+      become: yes
+      shell: |
+        /opt/certbot/bin/pip install certbot certbot-apache
+        /opt/certbot/bin/pip install certbot certbot-nginx
+
+    - name: link files
+      become: yes
+      shell: |
+        ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+
+    - name: install certbot for nginx
+      become: yes
+      expect:
+        command: 'certbot --nginx'
+        responses:
+          '.*email address.*': '{{email_address}}' # 'Enter email address for urgent renewal and security notices...'
+          '.*read the Terms.*' : 'Y' # 'Please read the Terms of Service at....? \[Y\/n\]'
+          '.*share your email.*' : 'N' # 'as if you want to share your email with EFF  \[Y\/n\] '
+          '.*activate HTTPS for.*' : '' # 'generate cert for all domains \[Y\/n\]'
+
+    - name: create shell script renew certificate
+      copy:
+        dest: /etc/cron.weekly/certbot.sh
+        content: |
+          #!/bin/sh
+          /usr/bin/certbot renew > /dev/null 2>&1
+          systemctl restart nginx
+
+    - name: Ensure certbot.sh is executable
+      file:
+        path: /etc/cron.weekly/certbot.sh
+        mode: '0755'  # Ustawienie uprawnień do wykonywania (rwxr-xr-x)
+        state: file
+      
