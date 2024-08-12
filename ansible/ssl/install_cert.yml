@@ -48,6 +48,6 @@
     - name: Ensure certbot.sh is executable
       file:
         path: /etc/cron.weekly/certbot.sh
-        mode: '0755'  # Ustawienie uprawnień do wykonywania (rwxr-xr-x)
+        mode: '0755'  # (rwxr-xr-x)
         state: file
       
