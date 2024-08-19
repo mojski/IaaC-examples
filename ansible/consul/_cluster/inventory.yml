@@ -1,0 +1,26 @@
+all:
+  vars:
+    consul_release: https://releases.hashicorp.com/consul/1.8.4/consul_1.8.4_linux_amd64.zip
+    consul_zip_file: consul_1.8.4_linux_amd64.zip
+    consul_file: consul
+    consul_user: consul
+    consul_group: consul
+    consul_encrypt_key: key
+    log_level: "INFO"
+    datacenter: "dc1"
+    
+  hosts:
+    node_1:
+      ansible_host: <<ip_host>>
+      ansible_ssh_user: <<ssh_user>>
+      server_name: worker
+      consul_retry_join: ["0.0.0.0", "0.0.0.0"] # other servers ips
+      node_name: n1
+      is_server: "true" # must be a string
+    
+    # node_2:
+    #   ansible_host: <<ip_host>>
+    #   ansible_ssh_user: <<ssh_user>>
+    #   server_name: mm-vm
+    #   consul_retry_join: ["0.0.0.0", "0.0.0.0"]
+    #   node_name: n2

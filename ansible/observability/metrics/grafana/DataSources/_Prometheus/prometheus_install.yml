@@ -10,7 +10,7 @@
 
     - name: Download Prometheus
       get_url:
-        url: "{{grafana_release}}"
+        url: "{{prometheus_release}}"
         dest: /tmp/prometheus.tar.gz
 
     - name: Extract Prometheus
