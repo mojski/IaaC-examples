@@ -11,16 +11,3 @@
       ansible.builtin.debug:
         msg:
         - "server_name: {{ server_name }}"
-
-    - name: Prints consul_retry_join
-      ansible.builtin.debug:
-        msg:
-        - "server_name: {{ item }}"
-      with_items: "{{ consul_retry_join }}"
-
-    - name: save json from template
-      become: yes
-      ansible.builtin.template:
-        src: ./templates/config.j2
-        dest: /home/mojski/config.json
-        

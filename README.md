@@ -4,6 +4,7 @@
 - 16/04/2024 Terraform script refactor and script for ubuntu 22.04
 - 29.06/2024 add monitoring with grafana, prometheus and node exporter playbooks, add seq docker-compose.yml
 - 08/2024 more grafana integrations by prometheus exporter, all in one jaeger intance, terraform script for creating cosmos db free instance, ansible playbooks for mariadb, mssql, elasticsearch and mongodb
+- 19/08/2024 - consul installation 
 
 ## Terraform and Ansible
 
