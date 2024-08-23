@@ -1,0 +1,12 @@
+{
+"datacenter": "dc0",
+"data_dir": "C:\\Tools\\Consul\\data",
+"log_level": "INFO",
+"node_name": "node0",
+"server": true,
+"bootstrap_expect": 1,
+"bind_addr": "0.0.0.0",
+"advertise_addr": "192.168.1.40",
+"client_addr": "0.0.0.0",
+"ui": true
+}

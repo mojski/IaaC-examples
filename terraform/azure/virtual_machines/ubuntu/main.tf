@@ -1,3 +1,4 @@
+# create resource group
 resource "random_pet" "rg_name" {
   prefix = var.resource_group_name_prefix
 }
@@ -5,105 +6,6 @@ resource "random_pet" "rg_name" {
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
   name     = random_pet.rg_name.id
-}
-
-# Create virtual network
-resource "azurerm_virtual_network" "my_terraform_network" {
-  name                = "mondayVnet"##
-  address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-}
-
-# Create subnet
-resource "azurerm_subnet" "my_terraform_subnet" {
-  name                 = "mySubnet"
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.my_terraform_network.name
-  address_prefixes     = ["10.0.1.0/24"]
-}
-
-# Create public IPs
-resource "azurerm_public_ip" "my_terraform_public_ip" {
-  name                = "myPublicIP"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  allocation_method   = "Static" ##
-}
-
-# Create Network Security Group and rule
-resource "azurerm_network_security_group" "my_terraform_nsg" {
-  name                = "myNetworkSecurityGroup"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  security_rule {
-    name                       = "SSH"
-    priority                   = 1001
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "22"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "web"
-    priority                   = 1011
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "ssl"
-    priority                   = 1012
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                        = "http"
-  priority                    = 100
-  direction                   = "Outbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "*"
-  source_address_prefix       = "*"
-  destination_address_prefix  = "*"
-  }
-}
-
-# Create network interface
-resource "azurerm_network_interface" "my_terraform_nic" {
-  name                = "myNIC"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-
-  ip_configuration {
-    name                          = "my_nic_configuration"
-    subnet_id                     = azurerm_subnet.my_terraform_subnet.id
-    private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.my_terraform_public_ip.id
-  }
-}
-
-# Connect the security group to the network interface
-resource "azurerm_network_interface_security_group_association" "example" {
-  network_interface_id      = azurerm_network_interface.my_terraform_nic.id
-  network_security_group_id = azurerm_network_security_group.my_terraform_nsg.id
 }
 
 # Generate random text for a unique storage account name
@@ -120,32 +22,32 @@ resource "azurerm_storage_account" "my_storage_account" {
   name                     = "diag${random_id.random_id.hex}"
   location                 = azurerm_resource_group.rg.location
   resource_group_name      = azurerm_resource_group.rg.name
-  account_tier             = var.account_tier
-  account_replication_type = var.account_replication_type
+  account_tier             = var.vm_details.account_tier
+  account_replication_type = var.vm_details.account_replication_type
 }
 
 # Create virtual machine
 resource "azurerm_linux_virtual_machine" "my_terraform_vm" {
-  name                  = var.computer_name
+  name                  = var.vm_details.name
   location              = azurerm_resource_group.rg.location
   resource_group_name   = azurerm_resource_group.rg.name
   network_interface_ids = [azurerm_network_interface.my_terraform_nic.id]
-  size                  = var.vmsize
+  size                  = var.vm_details.size
 
   os_disk {
-    name                 = var.disk_name
-    caching              = var.disk_caching
-    storage_account_type = var.storage_account_type
+    name                 = var.vm_details.disk_name
+    caching              = var.vm_details.disk_caching
+    storage_account_type = var.vm_details.storage_account_type
   }
 
   source_image_reference {
-    publisher = var.publisher
-    offer     = var.offer
-    sku       = var.sku
-    version   = var.machineversion
+    publisher = var.vm_details.publisher
+    offer     = var.vm_details.offer
+    sku       = var.vm_details.sku
+    version   = var.vm_details.version
   }
 
-  computer_name  = var.computer_name
+  computer_name  = var.vm_details.name
   admin_username = var.username
 
   admin_ssh_key {

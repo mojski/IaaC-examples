@@ -1,0 +1,26 @@
+# Playbook for Ubuntu 20.04
+# based on https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-20-04
+- name: install redis
+  hosts: servers
+  become: yes
+  tasks:
+    - name: install curl
+      command: |
+        apt-get install gnupg curl -y
+
+    - name: Install redis
+      apt:
+        name: redis-server
+        state: present
+        update_cache: yes
+
+    - name: set superviser
+      lineinfile:
+        path: /etc/redis/redis.conf
+        line: "supervised systemd"
+
+    - name: Ensure redis is running and and enabled to start automatically on reboots
+      service: 
+        name: redis 
+        enabled: yes
+        state: started

@@ -1,0 +1,17 @@
+{
+    "bootstrap": true,
+    "server": {{ is_server }},
+    "log_level": "{{ log_level }}",
+    "enable_syslog": true,
+    "datacenter": "{{ datacenter }}",
+    "addresses" : {
+    "http": "0.0.0.0"
+    },
+    "bind_addr": "{{ bind_addr }}",
+    "node_name": "{{ node_name }}",
+    "data_dir": "/var/lib/consul",
+    "acl_datacenter": "{{ datacenter }}",
+    "acl_default_policy": "allow",
+    "encrypt": "{{ consul_encrypt_key }}",
+    "retry_join": {{ consul_retry_join | to_json }}
+}

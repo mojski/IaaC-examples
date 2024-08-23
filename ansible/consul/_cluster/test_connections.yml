@@ -1,0 +1,13 @@
+- hosts: "all"
+  name: test connections
+  tasks:
+    - name: Prints common
+      ansible.builtin.debug:
+        msg:
+        - "consul_release: {{ consul_release }}"
+        - "consul_zip_file: {{ consul_zip_file }}"
+
+    - name: Prints server vars
+      ansible.builtin.debug:
+        msg:
+        - "server_name: {{ server_name }}"
