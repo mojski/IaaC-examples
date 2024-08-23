@@ -5,22 +5,25 @@ all:
     consul_file: consul
     consul_user: consul
     consul_group: consul
-    consul_encrypt_key: key
+    consul_encrypt_key: <<key>>
     log_level: "INFO"
     datacenter: "dc1"
     
   hosts:
     node_1:
-      ansible_host: <<ip_host>>
+      ansible_host: <<node1_ip>>
       ansible_ssh_user: <<ssh_user>>
-      server_name: worker
-      consul_retry_join: ["0.0.0.0", "0.0.0.0"] # other servers ips
+      server_name: node1
+      consul_retry_join: ["<<node2_ip>>"] # other servers ips
       node_name: n1
       is_server: "true" # must be a string
+      bind_addr: 0.0.0.0 # do not use on production
     
-    # node_2:
-    #   ansible_host: <<ip_host>>
-    #   ansible_ssh_user: <<ssh_user>>
-    #   server_name: mm-vm
-    #   consul_retry_join: ["0.0.0.0", "0.0.0.0"]
-    #   node_name: n2
+    node_2:
+      ansible_host: <<node2_ip>>
+      ansible_ssh_user: <<ssh_user>>
+      server_name: node2
+      consul_retry_join: ["<<node1_ip>>"]
+      node_name: n2
+      is_server: "true"
+      bind_addr: 0.0.0.0
