@@ -6,12 +6,12 @@
   tasks:
     - name: Add APT key
       apt_key:
-        url: https://packages.grafana.com/gpg.key
+        url: "{{ grafana_gpg_key }}"
         state: present
 
     - name: Add Grafana APT repository
       apt_repository:
-        repo: "deb https://packages.grafana.com/oss/deb stable main"
+        repo: "deb {{ grafana_apt_repository }} stable main"
         state: present
 
     - name: Update APT cache
@@ -41,7 +41,7 @@
     
     - name: Copy nginx new nginx config to sites-available
       copy:
-        src: nginx.conf
+        src: grafana_nginx.conf
         dest: /etc/nginx/sites-available/default
 
     - name: Restart Nginx

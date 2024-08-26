@@ -1,0 +1,6 @@
+[servers]
+<<machine_ip>> ansible_ssh_user=<<user_name>>
+[servers:vars]
+grafana_apt_repository=https://packages.grafana.com/oss/deb
+grafana_gpg_key=https://packages.grafana.com/gpg.key
+prometheus_release=https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz
