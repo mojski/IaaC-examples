@@ -1,5 +1,0 @@
-[servers]
-137.116.248.230 ansible_ssh_user=<<user_name>>
-[servers:vars]
-prometheus_release=https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz
-the_number_of_the_beast=666
