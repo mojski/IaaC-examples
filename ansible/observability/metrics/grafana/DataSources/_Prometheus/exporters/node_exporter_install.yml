@@ -52,6 +52,7 @@
         name: node_exporter
         enabled: yes
         state: started
+        
     - name: add node exporter configuration
       become: yes
       blockinfile: 

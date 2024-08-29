@@ -1,0 +1,16 @@
+- hosts: "servers"
+  name: install docker
+  tasks:
+    - name: Install required tools
+      become: yes
+      apt:
+        name:
+          - docker
+          - docker-compose
+        state: present
+        update_cache: yes
+        
+    - name: enable using docker to none root user
+      become: yes
+      command: |
+        chmod "{{the_number_of_the_beast}}" /var/run/docker.sock

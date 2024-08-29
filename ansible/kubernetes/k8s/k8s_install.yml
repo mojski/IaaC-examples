@@ -1,0 +1,103 @@
+# based on https://medium.com/@bernesnantony/how-to-install-kubernetes-cluster-on-ubuntu-20-04-lts-22ec25008262
+- hosts: "all"
+  name: Enable Kubernetes repository on master and all worker nodes
+  tasks:
+    - name: Disable swap
+      become: yes
+      command: swapoff -a 
+    
+    - name: Disable SWAP in fstab since
+      become: yes
+      replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
+
+    - name: Install required tools
+      become: yes
+      apt:
+        name:
+          - apt-transport-https
+          - curl
+        state: present
+        update_cache: yes
+
+    - name: Add APT key
+      apt_key:
+        url: "{{ kube_gpg_key }}"
+        state: present
+
+    - name: Add Grafana APT repository
+      apt_repository:
+        repo: "deb {{ kube_apt_repository }} {{ kube_apt_distro }}"
+        state: present
+    
+- hosts: "all"
+  name: Enable Kubernetes repository on master and all worker nodes
+  tasks:
+    - name: Install required tools
+      become: yes
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+          - docker.io
+          - docker-compose
+        state: present
+        update_cache: yes
+
+    - name: change owner for created directories and files
+      become: yes
+      file:
+        path: /var/run/docker.sock
+        # owner: "{{ todo_user }}"
+        # group: "{{ todo_group }}"
+        mode: '{{ the_number_of_the_beast }}'
+
+    - name: Start and enable docker
+      become: yes
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+- hosts: "master_nodes"
+  name: Initializing and setting up the kubernetes cluster only on master nodes
+  tasks:
+    - name: Initialize api server
+      become: yes
+      shell: kubeadm init --apiserver-advertise-address {{ advertise_address }} --pod-network-cidr={{ pod_network_cidr }}
+      register: kubeadm_init_result
+    
+    - name: extract token
+      set_fact:
+        join_token_arg: "{{ kubeadm_init_result | regex_search('--token [a-zA-z0-9]*.[a-zA-z0-9]*') | first }}"
+        discovery-token-ca-cert-hash: "{{ kubeadm_init_result | regex_search('sha256:[a-zA-z0-9]{64}') | first }}"
+
+    - name: create kube user directory
+      shell: mkdir -p $HOME/.kube
+
+    - name: Copy file with owner and permissions
+      become: yes
+      copy:
+        src: /etc/kubernetes/admin.conf $HOME/.kube/config
+        dest: $HOME/.kube/config
+
+    - name: change owner
+      become: yes
+      shell: chown $(id -u):$(id -g) $HOME/.kube/config
+
+- hosts: "master_nodes"
+  name: Install Network
+  tasks:
+    - name: install network
+      become: yes
+      shell: kubectl apply -f {{ network_cni_file }}
+
+# - hosts: "worker_nodes"
+#   name: join to cluster
+#   tasks:
+#     - name: join
+#       become: yes
+#       shell: kubeadm join {{ advertise_address }}:6443 {{ join_token_arg }} --discovery-token-ca-cert-hash {{ discovery-token-ca-cert-hash }}

@@ -1,0 +1,61 @@
+all:
+  vars:
+    kube_release: https://releases.hashicorp.com/consul/1.8.4/consul_1.8.4_linux_amd64.zip
+    kube_gpg_key: ttps://packages.cloud.google.com/apt/doc/apt-key.gpg
+    kube_apt_repository: http://apt.kubernetes.io/
+    kube_apt_distro: kubernetes-xenial main
+    advertise_address: 192.168.2.11
+    pod_network_cidr: 172.16.0.0/16
+    network_cni_plugin: Flannel
+    network_cni_file: https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    # choosing the right plugin is very important and depends on many factors, you can read more here
+    # https://overcast.blog/choosing-the-right-container-network-interface-plugin-in-kubernetes-45391c7d4cc8
+    master_nodes_ports:
+      - port: 6443
+        direction: Inbound
+        name: "Kubernetes API server"
+
+      - port: 2379-2380
+        direction: Inbound
+        name: "etcd server client API"
+
+      - port: 10250
+        direction: Inbound
+        name: "Kubelet API"
+
+      - port: 10259
+        direction: Inbound
+        name: "kube-scheduler"
+
+    worker_nodes_ports:
+      - port: 10250
+        direction: Inbound
+        name: "Kubelet API"
+      
+      - port: 10256
+        direction: Inbound
+        name: "kube-proxy"
+
+      - port: 30000-32767
+        direction: Inbound
+        name: "NodePort Services"
+
+
+  master_nodes:
+    node_1m:
+      ansible_host: <<node1_ip>>
+      ansible_ssh_user: <<ssh_user>>
+      server_name: node1-m
+      advertise_address: 192.168.2.11
+      pod_network_cidr: 172.16.0.0/16
+
+  worker_nodes:
+    node_1w:
+      ansible_host: <<node1_ip>>
+      ansible_ssh_user: <<ssh_user>>
+      server_name: node1-w
+    
+    node_2w:
+      ansible_host: <<node2_ip>>
+      ansible_ssh_user: <<ssh_user>>
+      server_name: node2-w

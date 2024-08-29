@@ -1,0 +1,13 @@
+- hosts: "all"
+  name: test k8s connections
+  tasks:
+    - name: Prints common
+      ansible.builtin.debug:
+        msg:
+        - "kube_release: {{ kube_release }}"
+        - "kube_apt_repository: {{ kube_apt_repository }}"
+
+    - name: Prints server vars
+      debug:
+        msg:
+        - "server_name: {{ server_name }}"
