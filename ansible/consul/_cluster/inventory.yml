@@ -7,7 +7,43 @@ all:
     consul_group: consul
     consul_encrypt_key: <<key>>
     log_level: "INFO"
-    datacenter: "dc1"
+    data_center: "dc0"
+    ports:
+      - port: 8600
+        direction: inbound
+        name: "DNS Server"
+
+      - port: 8501
+        direction: inbound
+        name: "HTTPS API"
+      
+      - port: 8503
+        direction: inbound
+        name: "gRPC API"
+
+      - port: 8300
+        direction: inbound
+        name: "Server RPC-In"
+
+      - port: 8300
+        direction: outbound
+        name: "Server RPC-Out"
+
+      - port: 8301
+        direction: inbound
+        name: "LAN-Serf-In"
+
+      - port: 8301
+        direction: outbound
+        name: "LAN-Serf-Out"
+
+      - port: 8302
+        direction: inbound
+        name: "WAN-Serf-In"
+
+      - port: 8302
+        direction: outbound
+        name: "WAN-Serf-Out"
     
   hosts:
     node_1:

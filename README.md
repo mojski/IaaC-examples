@@ -1,114 +1,111 @@
+
 ## Changelog
-- 02/2024 initial: Ansible workshop resources for beginners
-- 14/04/2024 adding a terraform script for creating debian vm for programming and basics of ansible scripts
-- 16/04/2024 Terraform script refactor and script for ubuntu 22.04
-- 29.06/2024 add monitoring with grafana, prometheus and node exporter playbooks, add seq docker-compose.yml
-- 08/2024 more grafana integrations by prometheus exporter, all in one jaeger intance, terraform script for creating cosmos db free instance, ansible playbooks for mariadb, mssql, elasticsearch and mongodb
-- 19/08/2024 - consul installation, terraform vms refactoring
+- **02/2024**: Initial: Ansible workshop resources for beginners.
+- **14/04/2024**: Added a Terraform script for creating Debian VM for programming and basics of Ansible scripts.
+- **16/04/2024**: Refactored Terraform script and added support for Ubuntu 22.04.
+- **29/06/2024**: Added monitoring with Grafana, Prometheus, and Node Exporter playbooks; added SEQ `docker-compose.yml`.
+- **08/2024**: More Grafana integrations via Prometheus exporter, all-in-one Jaeger instance, Terraform script for creating Cosmos DB free instance, Ansible playbooks for MariaDB, MSSQL, Elasticsearch, and MongoDB.
+- **19/08/2024**: Consul installation and Terraform VMs refactoring.
 
 ## Terraform and Ansible
 
-Both tools are simillar, but mostly are used combined:
-- terraform for provisioing infrastructure
+Both tools are similar but are often used in combination:
+- Terraform for provisioning infrastructure.
 
-![alt text](/assets/terr.png)
+  ![Terraform](/assets/terr.png)
 
-- ansible for configuration
+- Ansible for configuration.
 
-![alt text](/assets/ans.png)
+  ![Ansible](/assets/ans.png)
 
-
-Create infrastructure with scripts ant tools like ansible and terrafor ensures repeatability, documentation and convenience of creating infrastructure. It is known as Ifrastructure as Code. 
+Creating infrastructure with tools like Ansible and Terraform ensures repeatability, documentation, and convenience. This approach is known as Infrastructure as Code (IaC).
 
 [Read more about IaC here](https://aws.amazon.com/what-is/iac/)
 
 [and here](https://www.redhat.com/en/topics/automation/what-is-infrastructure-as-code-iac)
 
-# Initial setup
-1. Install terraform 
-```shell
-winget install --id=Hashicorp.Terraform  -e
+## Initial Setup
+1. **Install Terraform:**
+   ```shell
+   winget install --id=Hashicorp.Terraform -e
+   ```
+
+2. **Select Azure Subscription:**
+   ```shell
+   az account set --subscription "<subscription ID or name>"
+   ```
+
+3. **Set Token:**
+   ```shell
+   az account get-access-token # Prompts Azure auth screen in browser; sets token in your shell upon success.
+   ```
+   Or, specify a subscription:
+   ```shell
+   az account get-access-token --subscription "<subscription ID or name>"
+   ```
+
+## How to Use
+1. Select the machine to create, and copy the `terraform/create_azure_foldername` folder to a separate directory.
+2. Customize the `variables.tf` file (e.g., VM name, user, SSH key path).
+3. Open a terminal in the folder and run:
+   ```shell
+   terraform init
+   terraform plan -out main.tfplan
+   ```
+   This creates and displays the `main.tfplan` file, showing all steps for creating the machine.
+
+4. If everything looks correct, apply the plan:
+   ```shell
+   terraform apply "main.tfplan"
+   ```
+
+5. The console will display the IP of the new machine:
+
+   ![New Machine IP](/assets/image.png)
+
+   Connect to the user retrieved from `variables.tf` using an SSH connection. You should connect without a password and have root privileges.
+
+   > **Caution:** Do not edit files in the current folder; this may cause issues with destroying the created resources.
+
+6. To delete everything, plan the destruction and apply:
+   ```shell
+   terraform plan -destroy -out main.destroy.tfplan # May take a few seconds
+   terraform apply "main.destroy.tfplan"
+   ```
+
+   ![Destroy Plan](/assets/image-1.png)
+
+## Using Ansible
+Before removing the machine, you can customize it with Ansible scripts (e.g., install Docker or Nginx).
+
+To run Ansible, you need a Linux environment. You can use Windows Subsystem for Linux (WSL) and access your home folder via Windows File Explorer.
+
 ```
-2. Select azure subscription
-```shell
-az account set --subscription "<subscription ID or name>"
+\\wsl.localhost\Ubuntu\home # Paths may vary
 ```
-3. Set token
-```shell
-az account get-access-token # it will prompt to azure auth screen in browser, after success it will set token in your shell
-```
-or select with specific subscription
-```shell
-az account get-access-token --subscription "<subscription ID or name>"
-```
+Alternatively, use any Linux machine (e.g., Raspberry Pi, another virtual machine).
 
-## How to use
-1. Select the machine to create, copy the terraform/create_azure_foldername folder to a separate directory
-2. Customize the variables.tf file: VM name, user, ssh key path and so on
-3. Open any console in the folder and type the commands:
-```shell
-terraform init
-#then:
-terraform plan -out main.tfplan
-```
-it will create and display the main.tfplan file, and all steps will be performed when creating the machine.
-4. If everything looks good, you can apply the plan with the command:
-```shell
-terraform apply "main.tfplan"
-```
-5. Console will display ip fo new machine:
-![alt text](/assets/image.png)
+Copy the `usable_playbooks` folder to your chosen location. In the Linux terminal, navigate to the `usable_playbooks` folder.
 
-ou can check this by connecting to the user retrieved from variables.tf using an ssh connection. You should connect without a password and have root privileges.
+1. Add the IP or alias of the machine you want to change to the inventory file:
+   ```ini
+   [servers]
+   <<ip_or_alias>> ansible_ssh_user=<<user_name>>
+   <<another_ip_or_alias>>
+   [servers:vars]
+   key="value" # Example template
+   ```
 
-> [!CAUTION]
-> do not edit files from the current folder, this may cause problems with the destruction of the created resources.
+2. Run any playbook using the command:
+   ```shell
+   ansible-playbook <<playbook_name.yml>> -i inventory
+   ```
 
-6. When you want to delete everything just plan destroy and apply it:
-```shell
-terraform plan -destroy -out main.destroy.tfplan # it could take few seconds
-```
-![alt text](/assets/image-1.png)
+   > **Caution:** Playbooks are written for Ubuntu 20.04. They may work on other distributions with minor adjustments.
 
-```shell
-terraform apply "main.destroy.tfplan"
-```
+## Useful Links
 
-# Using ansible
-Before you remove the machine, you can customize it with Ansible scripts, e.g. install Docker or Nginx.
-
-To run Ansible, you need a Linux computer. You can use Windows Subsystem for Linux and access your home folder from Windows File Explorer.
-
-```
-\\wsl.localhost\Ubuntu\home # paths may vary
-```
-You can also use any Linux machine (e.g. raspberry pi, other virtual machine).
-Paste the usable_playbooks folder in your chosen location.
-In the Linux terminal, navigate to the usable_playbooks folder.
-
-1. Add ip or alias of machine you want to change to inventory file:
-```ini
-[servers]
-<<ip_or_alias>> ansible_ssh_user=<<user_name>>
-<<another_ip_or_alias>>
-[servers:vars]
-key="value" # just template
-```
-
-2. run any playbook you want by command:
-```shell
-ansible-playbook <<playbook_name.yml>> -i inventory
-```
-> [!CAUTION]
-> Playbooks are written for Debian 11. They probably won't work on other distributions.
-
-## Useful links
-
-[winget instructions](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=winget)
-
-[Azure Auth with cli](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli)
-
-[Azure vm images](https://az-vm-image.info/)
-
-[Azure Gen 2 vm sizes](https://learn.microsoft.com/en-us/azure/virtual-machines/generation-2)
-
+- [Winget Instructions](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=winget)
+- [Azure CLI Authentication](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli)
+- [Azure VM Images](https://az-vm-image.info/)
+- [Azure Gen 2 VM Sizes](https://learn.microsoft.com/en-us/azure/virtual-machines/generation-2)
