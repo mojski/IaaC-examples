@@ -2,11 +2,6 @@
 - hosts: "all"
   name: install consul cluster
   tasks:
-    - name: update apt
-      become: yes
-      command: |
-        apt update
-    
     - name: Install unzip gnupg2 curl wget
       become: yes
       apt:

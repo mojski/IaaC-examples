@@ -1,0 +1,15 @@
+- hosts: "all"
+  name: install consul cluster
+  tasks:
+    - name: generate ip table backup file name
+      set_fact:
+        file_name: "IP_tables_backup_{{ ansible_date_time.year }}_{{ ansible_date_time.month }}_{{ ansible_date_time.day }}_{{ ansible_date_time.hour }}_{{ ansible_date_time.minute }}.txt"
+    
+    - name: backup existing rules
+      become: yes
+      shell: iptables-save > "{{ file_name }}"
+      
+    - name: set rules
+      become: yes
+      shell: "iptables -A {{ item.direction }} -p tcp --dport  {{ item.port }} -j ACCEPT"
+      loop: "{{ ports }}"

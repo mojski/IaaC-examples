@@ -1,12 +1,14 @@
 {
-"datacenter": "dc0",
-"data_dir": "C:\\Tools\\Consul\\data",
-"log_level": "INFO",
-"node_name": "node0",
-"server": true,
-"bootstrap_expect": 1,
-"bind_addr": "0.0.0.0",
-"advertise_addr": "192.168.1.40",
-"client_addr": "0.0.0.0",
-"ui": true
+    "datacenter": "dc0",
+    "data_dir": "C:\\Tools\\Consul\\data",
+    "log_level": "INFO",
+    "node_name": "builder",
+    "server": true,
+    "bootstrap_expect": 1,
+    "bind_addr": "0.0.0.0",
+    "advertise_addr": "<<local_ip",
+    "client_addr": "0.0.0.0",
+    "ui": true,
+    "encrypt": "key",
+    "retry_join": ["<<other_host_ip_1", "other_host_ip_2"]
 }
