@@ -1,0 +1,17 @@
+- hosts: "servers"
+  name: install certbot and secure basic
+  tasks:
+    - name: Copy files
+      copy:
+        src: "{{cert_storage_dir}}{{ item }}"
+        dest: "/etc/letsencrypt/live/{{domain}}/{{ item }}"
+        owner: {{certificate_user}}
+        group: {{certificate_user}}
+      with_items:
+        - privkey.pem
+        - fullchain.pem
+      
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted

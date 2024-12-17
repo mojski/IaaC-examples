@@ -1,0 +1,8 @@
+[servers]
+tools.navigal.dev ansible_ssh_user=mmojski
+apps.navigal.dev ansible_ssh_user=mmojski
+[servers:vars]
+cert_storage_dir=<dir_with_cert>
+domain=<domain>
+email=<email>
+certificate_user=<user>
