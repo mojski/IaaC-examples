@@ -47,7 +47,7 @@ variable "vm_details" {
 variable "username" {
   type        = string
   description = "user name"
-  default     = "mojski"
+  default     = "youruser_name"
 }
 
 variable "publicsshkey" {
