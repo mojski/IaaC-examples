@@ -31,13 +31,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     vm_size    = var.default_node_pool.vm_size
     node_count = var.default_node_pool.node_count
   }
-  linux_profile {
-    admin_username = var.username
-
-    ssh_key {
-      key_data = file(var.publicsshkey)
-    }
-  }
+  
   network_profile {
     network_plugin    = var.network.network_plugin
     load_balancer_sku = var.network.load_balancer_sku
