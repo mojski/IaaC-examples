@@ -6,7 +6,7 @@ variable "retention_days" {
   # possible values: 30, 60, 90 ... 730
 }
 
-ariable "applicarion_insights_sku" {
+variable "applicarion_insights_sku" {
   type        = string
   description = "sku"
   default     = "PerGB2018"
