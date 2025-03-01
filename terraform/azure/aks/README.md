@@ -82,4 +82,3 @@ kubectl config delete-context my-cluster
 ```
 
 Voilà! 🎉
-
