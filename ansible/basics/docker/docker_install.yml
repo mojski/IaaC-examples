@@ -1,24 +1,24 @@
-- name: install docker
+- name: Install docker
   hosts: servers
   tasks:
-    - name: update
+    - name: Update
       become: true
       ansible.builtin.apt:
         update_cache: true
 
-    - name: install docker
+    - name: Install docker
       become: true
       ansible.builtin.apt:
         name: docker.io
         state: present
 
-    - name: install docker-compose
+    - name: Install docker-compose
       become: true
       ansible.builtin.apt:
         name: docker-compose
         state: present
 
-    - name: enable using docker to non-root user
+    - name: Enable using docker to non-root user
       become: true
       ansible.builtin.file:
         path: /var/run/docker.sock
