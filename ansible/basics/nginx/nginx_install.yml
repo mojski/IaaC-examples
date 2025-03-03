@@ -1,4 +1,4 @@
-- name: install nginx
+- name: Install nginx
   hosts: servers
   tasks:
     - name: Update and upgrade apt packages
@@ -7,18 +7,18 @@
         upgrade: true
         update_cache: true
 
-    - name: install nginx
+    - name: Install nginx
       become: true
       ansible.builtin.apt:
         name: nginx
         state: present
 
-    - name: start nginx
+    - name: Start nginx
       ansible.builtin.service:
         name: nginx
         state: started
 
-    - name: enable nginx
+    - name: Enable nginx
       become: true
       ansible.builtin.service:
         name: nginx

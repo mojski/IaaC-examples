@@ -1,16 +1,17 @@
-- name: install certbot and secure basic
+- name: Install certbot and secure basic
   hosts: "servers"
   tasks:
     - name: Copy files
       ansible.builtin.copy:
-        src: "{{cert_storage_dir}}{{ item }}"
-        dest: "/etc/letsencrypt/live/{{domain}}/{{ item }}"
-        owner: {{certificate_user}}
-        group: {{certificate_user}}
+        src: "{{ cert_storage_dir }}{{ item }}"
+        dest: "/etc/letsencrypt/live/{{ domain }}/{{ item }}"
+        owner: "{{ certificate_user }}"
+        group: "{{ certificate_user }}"
+        mode: '0644'
       with_items:
         - privkey.pem
         - fullchain.pem
-      
+
     - name: Restart Nginx
       ansible.builtin.service:
         name: nginx
