@@ -5,22 +5,22 @@
   become: yes
   tasks:
     - name: install curl
-      command: |
+      ansible.builtin.command: |
         apt-get install gnupg curl -y
 
     - name: Install redis
-      apt:
+      ansible.builtin.apt:
         name: redis-server
         state: present
         update_cache: yes
 
     - name: set superviser
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/redis/redis.conf
         line: "supervised systemd"
 
     - name: Ensure redis is running and and enabled to start automatically on reboots
-      service: 
+      ansible.builtin.service: 
         name: redis 
         enabled: yes
         state: started

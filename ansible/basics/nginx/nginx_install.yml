@@ -3,17 +3,19 @@
   tasks:
     - name: Update and upgrade apt packages
       become: true
-      apt:
+      ansible.builtin.apt:
         upgrade: yes
         update_cache: yes
     - name: install nginx
       become: true
-      apt: name=nginx state=latest
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
     - name: start nginx
-      service:
-          name: nginx
-          state: started
+      ansible.builtin.service:
+        name: nginx
+        state: started
     - name: enable nginx
       become: yes
-      command: |
+      ansible.builtin.command: |
         sudo systemctl enable nginx

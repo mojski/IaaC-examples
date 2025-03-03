@@ -2,7 +2,7 @@
   name: install certbot and secure basic
   tasks:
     - name: Copy files
-      copy:
+      ansible.builtin.copy:
         src: "{{cert_storage_dir}}{{ item }}"
         dest: "/etc/letsencrypt/live/{{domain}}/{{ item }}"
         owner: {{certificate_user}}
@@ -12,6 +12,6 @@
         - fullchain.pem
       
     - name: Restart Nginx
-      service:
+      ansible.builtin.service:
         name: nginx
         state: restarted

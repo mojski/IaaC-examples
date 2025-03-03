@@ -5,46 +5,46 @@
 
   tasks:
     - name: Add APT key
-      apt_key:
+      ansible.builtin.apt_key:
         url: "{{ grafana_gpg_key }}"
         state: present
 
     - name: Add Grafana APT repository
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: "deb {{ grafana_apt_repository }} stable main"
         state: present
 
     - name: Update APT cache
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
 
     - name: Install Grafana
-      apt:
+      ansible.builtin.apt:
         name: grafana
         state: present
         
     - name: setup grafana.ini
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/grafana/grafana.ini
         regexp: '^;root_url = .*'
         line: 'root_url = %(protocol)s://%(domain)s:%(http_port)s/monitor/'
         backrefs: yes
 
     - name: Start and enable Grafana service
-      systemd:
+      ansible.builtin.systemd:
         name: grafana-server
         enabled: yes
         state: started
 
     - name: backup default nginx config
-      command: mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
+      ansible.builtin.command: mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
     
     - name: Copy nginx new nginx config to sites-available
-      copy:
+      ansible.builtin.copy:
         src: grafana_nginx.conf
         dest: /etc/nginx/sites-available/default
 
     - name: Restart Nginx
-      service:
+      ansible.builtin.service:
         name: nginx
         state: restarted

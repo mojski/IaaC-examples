@@ -3,17 +3,17 @@
   tasks:
     - name: update
       become: yes
-      command: |
+      ansible.builtin.command: |
         apt update
     - name: install docker
       become: yes
-      command: |
+      ansible.builtin.command: |
         apt install docker.io -y
     - name: install docker-compose
       become: yes
-      command: |
+      ansible.builtin.command: |
         apt install docker-compose -y
     - name: enable using docker to none root user
       become: yes
-      command: |
+      ansible.builtin.command: |
         sudo chmod "{{the_number_of_the_beast}}" /var/run/docker.sock

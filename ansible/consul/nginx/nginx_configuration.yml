@@ -3,27 +3,27 @@
   name: install certbot and secure basic
   tasks:
     - name: check nginx install
-      command: which nginx
+      ansible.builtin.command: which nginx
       register: nginx_installed
       ignore_errors: true
 
     - name: exit if there is no nginx on server
-      fail:
+      ansible.builtin.fail:
         msg: "Nginx is not installed run nginx install playbook first, or install nginx manually"
       when: nginx_installed.rc != 0
 
     - name: copy nginx config file
-      copy:
+      ansible.builtin.copy:
         src: /files/consul.conf
         dest: /etc/nginx/sites-available/consul.conf
     
     - name: link conf file
-      command: >
+      ansible.builtin.command: >
         ln -s /etc/nginx/sites-available/consul.conf /etc/nginx/sites-enabled/
       become: yes
 
     - name: restart nginx
-      systemd:
+      ansible.builtin.systemd:
         name: nginx
         enabled: yes
         state: restarted

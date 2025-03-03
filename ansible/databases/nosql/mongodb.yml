@@ -5,29 +5,29 @@
   become: yes
   tasks:
     - name: install curl
-      command: |
+      ansible.builtin.command: |
         apt-get install gnupg curl -y
     - name: Import the MongoDB public GPG key and save to keyring
-      shell: |
+      ansible.builtin.shell: |
         curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
         gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
 
     - name: update source list
-      shell: |
+      ansible.builtin.shell: |
         echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
     
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
     
     - name: Install MongoDB
-      apt:
+      ansible.builtin.apt:
         name: mongodb-org
         state: present
         update_cache: yes
     
     - name: Ensure mongodb is running and and enabled to start automatically on reboots
-      service: 
+      ansible.builtin.service: 
         name: mongod 
         enabled: yes
         state: started

@@ -5,34 +5,34 @@
   become: yes
   tasks:
     - name: install curl
-      command: |
+      ansible.builtin.command: |
         apt-get install gnupg curl -y
 
     - name: import elastic search public GPG key and save to keyring
-      shell: |
+      ansible.builtin.shell: |
         curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 
     - name: update source list
-      shell: |
+      ansible.builtin.shell: |
         echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
     
     - name: Update apt cache
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
     
     - name: Install elastic search
-      apt:
+      ansible.builtin.apt:
         name: elasticsearch
         state: present
         update_cache: yes
     
     - name: set elastic search config yaml file
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/elasticsearch/elasticsearch.yml
         line: "network.host: localhost"
     
     - name: Ensure elasticsearch is running and and enabled to start automatically on reboots
-      service: 
+      ansible.builtin.service: 
         name: elasticsearch 
         enabled: yes
         state: started
