@@ -22,4 +22,4 @@ jobs:
         run: pip install ansible ansible-lint
 
       - name: Run ansible-lint
-        run: ansible-lint ansible/basics/ --exclude=inventory/
+        run: ansible-lint ansible/basics/ --exclude=inventory/ansible/basics/users/users.yml
