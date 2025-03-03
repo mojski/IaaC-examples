@@ -10,14 +10,14 @@
       ansible.builtin.user:
         name: "{{ item.name }}"
         shell: /bin/bash
-        create_home: yes
+        create_home: true
       with_items: "{{ users }}"
 
     - name: Add users to sudo
       ansible.builtin.user:
         name: "{{ item.name }}"
         groups: sudo
-        append: yes
+        append: true
       with_items: "{{ users }}"
 
     - name: Create .ssh directory

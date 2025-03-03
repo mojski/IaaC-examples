@@ -11,29 +11,34 @@
           - curl
           - wget
         state: present
-        update_cache: yes
+        update_cache: true
+      changed_when: false
 
     - name: Download consul release
       ansible.builtin.get_url:
-        url: "{{consul_release}}"
-        dest: /tmp/{{consul_zip_file}}
+        url: "{{ consul_release }}"
+        dest: /tmp/{{ consul_zip_file }}
+      changed_when: false
 
     - name: Extract
       ansible.builtin.unarchive:
-        src: /tmp/{{consul_zip_file}}
+        src: /tmp/{{ consul_zip_file }}
         dest: /tmp/
-        remote_src: yes
+        remote_src: true
+      changed_when: false
 
     - name: Move binaries
       ansible.builtin.command: >
-        mv /tmp/{{consul_file}} /usr/local/bin/
+        mv /tmp/{{ consul_file }} /usr/local/bin/
       become: true
+      changed_when: false
 
     - name: Create consul group
       become: true
       ansible.builtin.group:
         name: "{{ consul_group }}"
         state: present
+      changed_when: false
 
     - name: Create consul user
       become: true
@@ -41,9 +46,10 @@
         name: "{{ consul_user }}"
         group: "{{ consul_group }}"
         state: present
-        createhome: yes
+        createhome: true
         home: /home/{{ consul_user }}
         shell: /bin/bash
+      changed_when: false
 
     - name: Create directories
       become: true
@@ -53,23 +59,27 @@
       with_items:
         - /var/lib/consul
         - /etc/consul.d
+      changed_when: false
 
     - name: create systemd service file
       become: true
       ansible.builtin.template:
         src: ./templates/consul.service.j2
         dest: /etc/systemd/system/consul.service
+      changed_when: false
 
     - name: Reload systemd
       become: true
       ansible.builtin.systemd:
-        daemon_reload: yes
+        daemon_reload: true
+      changed_when: false
 
     - name: create consul.json file
       become: true
       ansible.builtin.template:
         src: ./templates/config.j2
         dest: /etc/consul.d/config.json
+      changed_when: false
 
     - name: change owner for created directories and files
       become: true
@@ -78,14 +88,17 @@
         owner: "{{ consul_user }}"
         group: "{{ consul_group }}"
         mode: '755'
-      with_items: 
+      with_items:
         - /var/lib/consul
         - /etc/consul.d
         - /etc/consul.d/config.json
+      changed_when: false
 
     - name: Start and enable consul service
       become: true
       ansible.builtin.systemd:
         name: consul
-        enabled: yes
+        enabled: true
         state: started
+      changed_when: false
+# TODO check file permisions

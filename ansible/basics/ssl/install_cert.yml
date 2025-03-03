@@ -4,8 +4,8 @@
     - name: Update apt cache
       become: true
       apt:
-      update_cache: true
-    
+        update_cache: true
+
     - name: Install Python and dependencies
       become: true
       apt:
@@ -15,7 +15,7 @@
           - libaugeas0
         state: present
         update_cache: true
-    
+
     - name: install certbot
       become: true
       shell: |
@@ -36,9 +36,9 @@
         command: 'certbot --nginx'
         responses:
           '.*email address.*': '{{ email_address }}' # 'Enter email address for urgent renewal and security notices...'
-          '.*read the Terms.*' : 'Y' # 'Please read the Terms of Service at....? \[Y\/n\]'
-          '.*share your email.*' : 'N' # 'as if you want to share your email with EFF  \[Y\/n\] '
-          '.*activate HTTPS for.*' : '' # 'generate cert for all domains \[Y\/n\]'
+          '.*read the Terms.*': 'Y' # 'Please read the Terms of Service at....? \[Y\/n\]'
+          '.*share your email.*': 'N' # 'as if you want to share your email with EFF  \[Y\/n\] '
+          '.*activate HTTPS for.*': '' # 'generate cert for all domains \[Y\/n\]'
 
     - name: create shell script renew certificate
       copy:
@@ -47,9 +47,4 @@
           #!/bin/sh
           /usr/bin/certbot renew > /dev/null 2>&1
           systemctl restart nginx
-
-    - name: Ensure certbot.sh is executable
-      file:
-        path: /etc/cron.weekly/certbot.sh
         mode: '0755'  # (rwxr-xr-x)
-        state: file
