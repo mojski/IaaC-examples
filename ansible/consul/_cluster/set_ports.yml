@@ -1,5 +1,5 @@
-- hosts: "all"
-  name: install consul cluster
+- name: install consul cluster
+  hosts: all
   tasks:
     - name: generate ip table backup file name
       ansible.builtin.set_fact:

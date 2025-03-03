@@ -1,6 +1,6 @@
-#https://docs.docker.com/engine/install/ubuntu/
-- hosts: "servers"
-  name: install docker
+# https://docs.docker.com/engine/install/ubuntu/
+- name: install docker
+  hosts: servers
   tasks:
     - name: update apt
       become: yes
@@ -38,6 +38,7 @@
       become: yes
       ansible.builtin.command: |
         apt install docker.io -y
+
     - name: install docker-compose
       become: yes
       ansible.builtin.command: |

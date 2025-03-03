@@ -1,5 +1,5 @@
-- hosts: "servers"
-  name: install certbot and secure basic
+- name: install certbot and secure basic
+  hosts: "servers"
   tasks:
     - name: Copy files
       ansible.builtin.copy:

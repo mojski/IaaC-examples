@@ -1,18 +1,21 @@
-- hosts: "servers"
-  name: install docker
+- name: install docker
+  hosts: servers
   tasks:
     - name: update
       become: yes
       ansible.builtin.command: |
         apt update
+
     - name: install docker
       become: yes
       ansible.builtin.command: |
         apt install docker.io -y
+
     - name: install docker-compose
       become: yes
       ansible.builtin.command: |
         apt install docker-compose -y
+
     - name: enable using docker to none root user
       become: yes
       ansible.builtin.command: |

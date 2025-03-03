@@ -1,6 +1,6 @@
 # based on https://www.atlantic.net/vps-hosting/how-to-install-consul-server-on-ubuntu/
-- hosts: "servers"
-  name: install consul single instance
+- name: install consul single instance
+  hosts: servers
   tasks:
     - name: update apt
       become: yes

@@ -1,6 +1,6 @@
 # based on https://www.atlantic.net/vps-hosting/how-to-install-consul-server-on-ubuntu/
-- hosts: "all"
-  name: install consul cluster
+- name: install consul cluster
+  hosts: all
   tasks:
     - name: Install unzip gnupg2 curl wget
       become: yes
