@@ -32,7 +32,7 @@
 
     - name: Install certbot for nginx
       become: true
-      expect:
+      ansible.builtin.expect:
         command: 'certbot --nginx'
         responses:
           '.*email address.*': '{{ email_address }}' # 'Enter email address for urgent renewal and security notices...'
@@ -41,7 +41,7 @@
           '.*activate HTTPS for.*': '' # 'generate cert for all domains \[Y\/n\]'
 
     - name: Create shell script renew certificate
-      copy:
+      ansible.builtin.copy:
         dest: /etc/cron.weekly/certbot.sh
         content: |
           #!/bin/sh
