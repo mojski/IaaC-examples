@@ -11,5 +11,6 @@
       
     - name: set rules
       become: true
-      ansible.builtin.shell: "iptables -A {{ item.direction }} -p tcp --dport  {{ item.port }} -j ACCEPT"
+      ansible.builtin.shell: |
+        iptables -C {{ item.direction }} -p tcp --dport {{ item.port }} -j ACCEPT || iptables -A {{ item.direction }} -p tcp --dport {{ item.port }} -j ACCEPT
       loop: "{{ ports }}"
