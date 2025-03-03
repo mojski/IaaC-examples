@@ -2,27 +2,27 @@
 # and https://computingforgeeks.com/install-and-configure-prometheus-mysql-exporter-on-ubuntu-centos/
 - name: Install mysql/mariaDb Exporter
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: Create mysql exporter user
-      user:
+      ansible.builtin.user:
         name: mysqld_exporter
         shell: /bin/false
     #variables
     - name: create mysql user
-      command: |
+      ansible.builtin.command: |
         mysql -e "CREATE USER 'mysqld_exporter'@'localhost' IDENTIFIED BY 'StrongPassword' WITH MAX_USER_CONNECTIONS 2;"
 
     - name: add permissions
-      command: |
+      ansible.builtin.command: |
         mysql -e "GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'mysqld_exporter'@'localhost';"
 
     - name: flush
-      command: |
+      ansible.builtin.command: |
         mysql -e "FLUSH PRIVILEGES;"
 
     - name: create mysqld credentials
-      copy:
+      ansible.builtin.copy:
         dest: /etc/.mysqld_exporter.cnf
         content: |
           [client]
@@ -30,7 +30,7 @@
           password=StrongPassword
 
     - name: Create my sql exporter systemd service
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/mysqld_exporter.service
         content: |
           [Unit]
@@ -50,34 +50,34 @@
           WantedBy=multi-user.target
 
     - name: download latest exporter 
-      shell: |
+      ansible.builtin.shell: |
         curl -s https://api.github.com/repos/prometheus/mysqld_exporter/releases/latest   | grep browser_download_url | grep linux-amd64 |  cut -d '"' -f 4 | wget -qi -
 
     - name: extract 
-      shell: |
+      ansible.builtin.shell: |
         tar xvf mysqld_exporter-*.linux-amd64.tar.gz
 
     - name: chmod as exec 
-      shell: |
+      ansible.builtin.shell: |
         chmod +x mysqld_exporter-*.linux-amd64/mysqld_exporter
 
     - name: Move mysql exporter binary
-      command: >
+      ansible.builtin.command: >
         mv mv mysqld_exporter-*.linux-amd64/mysqld_exporter /usr/local/bin
 
     - name: Reload systemd
-      systemd:
+      ansible.builtin.systemd:
         daemon_reload: yes
 
     - name: Start and enable mysql exporter service
-      systemd:
+      ansible.builtin.systemd:
         name: mysqld_exporter
         enabled: yes
         state: started
 
     - name: add node exporter configuration
-      become: yes
-      blockinfile: 
+      become: true
+      ansible.builtin.blockinfile: 
         dest: /etc/prometheus/prometheus.yml
         marker: "# {mark} ANSIBLE MANAGED BLOCK mysql exporter 1"
         block: |2
@@ -86,7 +86,7 @@
                 - targets: ['localhost:9104']
 
     - name: restart prometheus
-      systemd:
+      ansible.builtin.systemd:
         name: prometheus
         enabled: yes
         state: restarted

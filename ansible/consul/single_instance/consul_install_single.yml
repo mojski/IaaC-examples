@@ -1,15 +1,15 @@
 # based on https://www.atlantic.net/vps-hosting/how-to-install-consul-server-on-ubuntu/
-- hosts: "servers"
-  name: install consul single instance
+- name: Install consul single instance
+  hosts: servers
   tasks:
-    - name: update apt
-      become: yes
-      command: |
+    - name: Update apt
+      become: true
+      ansible.builtin.command: |
         apt update
     
     - name: Install unzip gnupg2 curl wget
-      become: yes
-      apt:
+      become: true
+      ansible.builtin.apt:
         name:
           - unzip
           - gnupg2
@@ -19,30 +19,30 @@
         update_cache: yes
 
     - name: Download consul release
-      get_url:
+      ansible.builtin.get_url:
         url: "{{consul_release}}"
         dest: /tmp/{{consul_zip_file}}
 
     - name: Extract
-      unarchive:
+      ansible.builtin.unarchive:
         src: /tmp/{{consul_zip_file}}
         dest: /tmp/
         remote_src: yes
 
     - name: Move binaries
-      command: >
+      ansible.builtin.command: >
         mv /tmp/{{consul_file}} /usr/local/bin/
-      become: yes
+      become: true
 
     - name: Create consul group
-      become: yes
-      group:
+      become: true
+      ansible.builtin.group:
         name: "{{ consul_group }}"
         state: present
 
     - name: Create consul user
-      become: yes
-      user:
+      become: true
+      ansible.builtin.user:
         name: "{{ consul_user }}"
         group: "{{ consul_group }}"
         state: present
@@ -51,54 +51,54 @@
         shell: /bin/bash
 
     - name: Create directories
-      become: yes
-      file:
+      become: true
+      ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
       with_items:
         - /var/lib/consul
         - /etc/consul.d
 
-    - name: copy consul systemd service file
-      become: yes
-      copy:
+    - name: Copy consul systemd service file
+      become: true
+      ansible.builtin.copy:
         src: ./files/consul.service
         dest: /etc/systemd/system/
 
     - name: Reload systemd
-      become: yes
-      systemd:
+      become: true
+      ansible.builtin.systemd:
         daemon_reload: yes
 
-    - name: copy consul config file
-      become: yes
-      copy:
+    - name: Copy consul config file
+      become: true
+      ansible.builtin.copy:
         src: ./files/config.json
         dest: /etc/consul.d/config.json
 
-    - name: set secret
-      become: yes
-      lineinfile:
+    - name: Set secret
+      become: true
+      ansible.builtin.lineinfile:
         path: /etc/consul.d/config.json
         regexp: '"encrypt": "key"'
         line: '"encrypt": "{{consul_encrypt_key}}"'
 
-    - name: change owner for created directories and files
-      become: yes
-      file:
+    - name: Change owner for created directories and files
+      become: true
+      ansible.builtin.file:
         path: "{{ item }}"
         owner: "{{ consul_user }}"
         group: "{{ consul_group }}"
         mode: '755'
-      with_items: 
+      with_items:
         - /var/lib/consul
         - /etc/consul.d
         - /etc/consul.d/config.json
 
     # TODO finish configuration
     - name: Start and enable consul service
-      become: yes
-      systemd:
+      become: true
+      ansible.builtin.systemd:
         name: consul
         enabled: yes
         state: started

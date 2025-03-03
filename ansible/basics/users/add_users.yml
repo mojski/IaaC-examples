@@ -1,22 +1,25 @@
-- hosts: "servers"
-  name: add users
-  become: yes
+- name: add users
+  hosts: servers
+  become: true
   tasks:
     - name: Include users
       include_vars:
         file: users.yml
+
     - name: Add users
       ansible.builtin.user:
         name: "{{ item.name }}"
         shell: /bin/bash
         create_home: yes
       with_items: "{{ users }}"
+
     - name: Add users to sudo
       ansible.builtin.user:
         name: "{{ item.name }}"
         groups: sudo
         append: yes
       with_items: "{{ users }}"
+
     - name: Create .ssh directory
       ansible.builtin.file:
         path: "/home/{{ item.name }}/.ssh"
@@ -25,6 +28,7 @@
         owner: "{{ item.name }}"
         group: "{{ item.name }}"
       with_items: "{{ users }}"
+
     - name: Add public keys to authorized_keys
       ansible.builtin.copy:
         dest: "/home/{{ item.name }}/.ssh/authorized_keys"

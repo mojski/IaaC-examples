@@ -1,5 +1,5 @@
-- hosts: "all"
-  name: test connections
+- name: Test connections
+  hosts: all
   tasks:
     - name: Prints common
       ansible.builtin.debug:

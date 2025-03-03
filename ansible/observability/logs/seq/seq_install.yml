@@ -1,7 +1,7 @@
 ---
-- name: run seq
+- name: Run seq
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: Create a directory if it does not exist
       ansible.builtin.file:
@@ -10,17 +10,17 @@
         mode: '0755'
 
     - name: Copy docker compose to location
-      copy:
+      ansible.builtin.copy:
         src: docker-compose.yml
         dest: /tmp/seq/docker-compose.yml
 
     # it is hack, should use newer version of ansible and community docker module
-    - name: create shell script to run docker 
-      copy:
+    - name: Create shell script to run docker 
+      ansible.builtin.copy:
         dest: /tmp/seq/run_docker_compose.sh
         content: |
           #!/bin/bash
           docker-compose -f /tmp/seq/docker-compose.yml up -d
 
     - name: Run shell script on remote server
-      shell: sh /tmp/seq/run_docker_compose.sh
+      ansible.builtin.shell: sh /tmp/seq/run_docker_compose.sh

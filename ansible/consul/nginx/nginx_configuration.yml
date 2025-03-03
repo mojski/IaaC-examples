@@ -1,29 +1,29 @@
 # based on https://www.atlantic.net/vps-hosting/how-to-install-consul-server-on-ubuntu/  (Step 4)
-- hosts: "servers"
-  name: install certbot and secure basic
+- name: Install certbot and secure basic
+  hosts: "servers"
   tasks:
-    - name: check nginx install
-      command: which nginx
+    - name: Check nginx install
+      ansible.builtin.command: which nginx
       register: nginx_installed
       ignore_errors: true
 
-    - name: exit if there is no nginx on server
-      fail:
+    - name: Exit if there is no nginx on server
+      ansible.builtin.fail:
         msg: "Nginx is not installed run nginx install playbook first, or install nginx manually"
       when: nginx_installed.rc != 0
 
-    - name: copy nginx config file
-      copy:
+    - name: Copy nginx config file
+      ansible.builtin.copy:
         src: /files/consul.conf
         dest: /etc/nginx/sites-available/consul.conf
     
-    - name: link conf file
-      command: >
+    - name: Link conf file
+      ansible.builtin.command: >
         ln -s /etc/nginx/sites-available/consul.conf /etc/nginx/sites-enabled/
-      become: yes
+      become: true
 
-    - name: restart nginx
-      systemd:
+    - name: Restart nginx
+      ansible.builtin.systemd:
         name: nginx
         enabled: yes
         state: restarted

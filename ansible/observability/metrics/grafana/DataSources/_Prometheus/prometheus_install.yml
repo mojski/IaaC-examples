@@ -1,36 +1,36 @@
 ---
 - name: Install Prometheus
   hosts: "servers"
-  become: yes
+  become: true
   tasks:
     - name: Create Prometheus user
-      user:
+      ansible.builtin.user:
         name: prometheus
         shell: /bin/false
 
     - name: Download Prometheus
-      get_url:
+      ansible.builtin.get_url:
         url: "{{prometheus_release}}"
         dest: /tmp/prometheus.tar.gz
 
     - name: Extract Prometheus
-      unarchive:
+      ansible.builtin.unarchive:
         src: /tmp/prometheus.tar.gz
         dest: /tmp/
         remote_src: yes
 
     - name: Move Prometheus binaries
-      command: >
+      ansible.builtin.command: >
         mv /tmp/prometheus-2.44.0.linux-amd64/prometheus /usr/local/bin/
-      become: yes
+      become: true
 
     - name: Move Promtool binary
-      command: >
+      ansible.builtin.command: >
         mv /tmp/prometheus-2.44.0.linux-amd64/promtool /usr/local/bin/
-      become: yes
+      become: true
 
     - name: Create Prometheus directories
-      file:
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
         owner: prometheus
@@ -41,12 +41,12 @@
         - /var/lib/prometheus
 
     - name: Move Prometheus config
-      command: >
+      ansible.builtin.command: >
         mv /tmp/prometheus-2.44.0.linux-amd64/prometheus.yml /etc/prometheus/
-      become: yes
+      become: true
       
     - name: Create Prometheus systemd service
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/prometheus.service
         content: |
           [Unit]
@@ -68,11 +68,11 @@
           WantedBy=multi-user.target
 
     - name: Reload systemd
-      systemd:
+      ansible.builtin.systemd:
         daemon_reload: yes
 
     - name: Start and enable Prometheus service
-      systemd:
+      ansible.builtin.systemd:
         name: prometheus
         enabled: yes
         state: started

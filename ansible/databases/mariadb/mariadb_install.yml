@@ -3,23 +3,23 @@
   become: true
   tasks:
     - name: Update APT package index
-      apt:
+      ansible.builtin.apt:
         update_cache: yes
 
     - name: Install MariaDB server
-      apt:
+      ansible.builtin.apt:
         name: mariadb-server
         state: present
 
     - name: Start and enable MariaDB service
-      systemd:
+      ansible.builtin.systemd:
         name: mariadb
         state: started
         enabled: yes
         
     - name: mariaDB secure installation
-      become: yes
-      expect:
+      become: true
+      ansible.builtin.expect:
         command: 'sudo mysql_secure_installation'
         responses:
           password: "{{root_password}}"
@@ -33,8 +33,8 @@
   hosts: servers
   tasks:
     - name: bind ports
-      become: yes
-      blockinfile:
+      become: true
+      ansible.builtin.blockinfile:
         dest: /etc/mysql/my.cnf
         block: |
           [mysqld]
@@ -43,8 +43,8 @@
   hosts: servers
   tasks:
     - name: restart maria db
-      become: yes
-      command: systemctl restart mariadb
+      become: true
+      ansible.builtin.command: systemctl restart mariadb
 
 # totally remove:
 # systemctl stop mariadb

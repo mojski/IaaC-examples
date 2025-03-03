@@ -1,32 +1,32 @@
 ---
 - name: Install Node Exporter
   hosts: all
-  become: yes
+  become: true
 
   tasks:
     - name: Create Node Exporter user
-      user:
+      ansible.builtin.user:
         name: node_exporter
         shell: /bin/false
 
     - name: Download Node Exporter
-      get_url:
+      ansible.builtin.get_url:
         url: https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
         dest: /tmp/node_exporter.tar.gz
 
     - name: Extract Node Exporter
-      unarchive:
+      ansible.builtin.unarchive:
         src: /tmp/node_exporter.tar.gz
         dest: /tmp/
         remote_src: yes
 
     - name: Move Node Exporter binary
-      command: >
+      ansible.builtin.command: >
         mv /tmp/node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
-      become: yes
+      become: true
 
     - name: Create Node Exporter systemd service
-      copy:
+      ansible.builtin.copy:
         dest: /etc/systemd/system/node_exporter.service
         content: |
           [Unit]
@@ -44,17 +44,17 @@
           WantedBy=multi-user.target
 
     - name: Reload systemd
-      systemd:
+      ansible.builtin.systemd:
         daemon_reload: yes
 
     - name: Start and enable Node Exporter service
-      systemd:
+      ansible.builtin.systemd:
         name: node_exporter
         enabled: yes
         state: started
     - name: add node exporter configuration
-      become: yes
-      blockinfile: 
+      become: true
+      ansible.builtin.blockinfile: 
         dest: /etc/prometheus/prometheus.yml
         marker: "# {mark} ANSIBLE MANAGED BLOCK node exporter"
         block: |2
@@ -63,7 +63,7 @@
                 - targets: ['localhost:9100']
 
     - name: restart prometheus
-      systemd:
+      ansible.builtin.systemd:
         name: prometheus
         enabled: yes
         state: restarted
