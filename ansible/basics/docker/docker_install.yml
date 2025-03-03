@@ -3,20 +3,23 @@
   tasks:
     - name: update
       become: true
-      ansible.builtin.command: |
-        apt update
+      ansible.builtin.apt:
+        update_cache: yes
 
     - name: install docker
       become: true
-      ansible.builtin.command: |
-        apt install docker.io -y
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
 
     - name: install docker-compose
       become: true
-      ansible.builtin.command: |
-        apt install docker-compose -y
+      ansible.builtin.apt:
+        name: docker-compose
+        state: present
 
-    - name: enable using docker to none root user
+    - name: enable using docker to non-root user
       become: true
-      ansible.builtin.command: |
-        sudo chmod "{{the_number_of_the_beast}}" /var/run/docker.sock
+      ansible.builtin.file:
+        path: /var/run/docker.sock
+        mode: "{{ the_number_of_the_beast }}"

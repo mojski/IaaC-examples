@@ -4,28 +4,30 @@
   tasks:
     - name: update apt
       become: true
-      ansible.builtin.command:
-        cmd: apt update
+      ansible.builtin.apt:
+        update_cache: yes
 
     - name: install curl certificates
       become: true
-      ansible.builtin.command:
-        cmd: apt-get install ca-certificates curl -y
+      ansible.builtin.apt:
+        name: 
+          - ca-certificates
+          - curl
+        state: present
 
     - name: install keyrings
       become: true
-      ansible.builtin.command:
-        cmd: install -m 0755 -d /etc/apt/keyrings
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
 
     - name: download gpg keys
       become: true
-      ansible.builtin.command:
-        cmd: curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-
-    - name: change mode to 
-      become: true
-      ansible.builtin.command:
-        cmd: chmod a+r /etc/apt/keyrings/docker.asc
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
 
     - name: add docker repo to apt
       become: true
@@ -34,20 +36,23 @@
 
     - name: update apt again
       become: true
-      ansible.builtin.command:
-        cmd: apt update
+      ansible.builtin.apt:
+        update_cache: yes
 
     - name: install docker
       become: true
-      ansible.builtin.command:
-        cmd: apt install docker.io -y
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
 
     - name: install docker-compose
       become: true
-      ansible.builtin.command:
-        cmd: apt install docker-compose -y
+      ansible.builtin.apt:
+        name: docker-compose
+        state: present
 
     - name: enable using docker to non-root user
       become: true
-      ansible.builtin.command:
-        cmd: chmod 666 /var/run/docker.sock
+      ansible.builtin.file:
+        path: /var/run/docker.sock
+        mode: '0666'
