@@ -1,4 +1,4 @@
-- name: add users
+- name: Add users
   hosts: servers
   become: true
   tasks:

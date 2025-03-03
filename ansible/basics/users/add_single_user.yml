@@ -1,20 +1,20 @@
-- name: add users
+- name: Add users
   hosts: servers
   become: true
   tasks:
-    - name: add user
+    - name: Add user
       ansible.builtin.user:
         name: "{{ user_name }}"
         shell: /bin/bash
         create_home: true
 
-    - name: add user to sudo
+    - name: Add user to sudo
       ansible.builtin.user:
         name: "{{ user_name }}"
         groups: sudo
         append: true
 
-    - name: create ssh catalog
+    - name: Create ssh catalog
       ansible.builtin.file:
         path: /home/{{ user_name }}/.ssh
         state: directory
@@ -22,7 +22,7 @@
         owner: "{{ user_name }}"
         group: "{{ user_name }}"
 
-    - name: add public key
+    - name: Add public key
       ansible.builtin.copy:
         dest: /home/{{ user_name }}/.ssh/authorized_keys
         content: "{{ user_ssh_key }}"

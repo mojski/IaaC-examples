@@ -1,4 +1,4 @@
-- name: install certbot and secure basic
+- name: Install certbot and secure basic
   hosts: "servers"
   tasks:
     - name: Copy files
