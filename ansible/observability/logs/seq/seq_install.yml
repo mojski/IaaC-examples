@@ -1,5 +1,5 @@
 ---
-- name: run seq
+- name: Run seq
   hosts: all
   become: true
   tasks:
@@ -15,7 +15,7 @@
         dest: /tmp/seq/docker-compose.yml
 
     # it is hack, should use newer version of ansible and community docker module
-    - name: create shell script to run docker 
+    - name: Create shell script to run docker 
       ansible.builtin.copy:
         dest: /tmp/seq/run_docker_compose.sh
         content: |

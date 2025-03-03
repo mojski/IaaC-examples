@@ -23,7 +23,7 @@
         name: grafana
         state: present
         
-    - name: setup grafana.ini
+    - name: Setup grafana.ini
       ansible.builtin.lineinfile:
         path: /etc/grafana/grafana.ini
         regexp: '^;root_url = .*'
@@ -36,7 +36,7 @@
         enabled: yes
         state: started
 
-    - name: backup default nginx config
+    - name: Backup default nginx config
       ansible.builtin.command: mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
     
     - name: Copy nginx new nginx config to sites-available

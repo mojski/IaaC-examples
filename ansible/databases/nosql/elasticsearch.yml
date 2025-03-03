@@ -1,18 +1,18 @@
 # Playbook for Ubuntu 20.04
 # Adapted from https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-20-04
-- name: install elastic search
+- name: Install elastic search
   hosts: servers
   become: true
   tasks:
-    - name: install curl
+    - name: Install curl
       ansible.builtin.command: |
         apt-get install gnupg curl -y
 
-    - name: import elastic search public GPG key and save to keyring
+    - name: Import elastic search public GPG key and save to keyring
       ansible.builtin.shell: |
         curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
 
-    - name: update source list
+    - name: Update source list
       ansible.builtin.shell: |
         echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
     
@@ -26,7 +26,7 @@
         state: present
         update_cache: yes
     
-    - name: set elastic search config yaml file
+    - name: Set elastic search config yaml file
       ansible.builtin.lineinfile:
         path: /etc/elasticsearch/elasticsearch.yml
         line: "network.host: localhost"

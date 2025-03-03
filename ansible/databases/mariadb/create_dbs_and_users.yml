@@ -1,4 +1,4 @@
-- name: create databases
+- name: Create databases
   hosts: servers
   become: true
   tasks:
@@ -8,7 +8,7 @@
       register: result
       with_items: "{{databases}}"
 
-- name: create databases, users and grant privileges
+- name: Create databases, users and grant privileges
   hosts: servers
   become: true
   tasks:
@@ -18,16 +18,17 @@
       register: result
       with_items: "{{databases}}"
 
-    - name: grant privileges
+    - name: Grant privileges
       ansible.builtin.command: |
         mysql -e "GRANT ALL PRIVILEGES ON {{item.database}}.* TO '{{item.user}}'@'%' WITH GRANT OPTION;"
       register: result
       with_items: "{{databases}}"
 
-    - name: flush privileges
+    - name: Flush privileges
       ansible.builtin.command: |
         mysql -e "FLUSH PRIVILEGES;"
       register: result
 
-    - ansible.builtin.debug:
+    - name: Debug
+      ansible.builtin.debug:
         var: result

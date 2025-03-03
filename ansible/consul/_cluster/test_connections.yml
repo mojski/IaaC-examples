@@ -1,4 +1,4 @@
-- name: test connections
+- name: Test connections
   hosts: all
   tasks:
     - name: Prints common
