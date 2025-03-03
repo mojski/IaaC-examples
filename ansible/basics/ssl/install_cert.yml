@@ -1,10 +1,10 @@
 - name: install certbot and secure basic
   hosts: servers
   tasks:
-    - name: update apt
+    - name: Update apt cache
       become: true
-      command: |
-        apt update
+      apt:
+      update_cache: true
     
     - name: Install Python and dependencies
       become: true
@@ -14,25 +14,28 @@
           - python3-venv
           - libaugeas0
         state: present
-        update_cache: yes
+        update_cache: true
     
     - name: install certbot
       become: true
       shell: |
-        /opt/certbot/bin/pip install certbot certbot-apache
-        /opt/certbot/bin/pip install certbot certbot-nginx
+        /opt/certbot/bin/pip install certbot certbot-apache certbot-nginx --upgrade --no-deps
+      args:
+        creates: /opt/certbot/bin/certbot
 
     - name: link files
       become: true
-      shell: |
-        ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+      file:
+        src: /opt/certbot/bin/certbot
+        dest: /usr/bin/certbot
+        state: link
 
     - name: install certbot for nginx
       become: true
       expect:
         command: 'certbot --nginx'
         responses:
-          '.*email address.*': '{{email_address}}' # 'Enter email address for urgent renewal and security notices...'
+          '.*email address.*': '{{ email_address }}' # 'Enter email address for urgent renewal and security notices...'
           '.*read the Terms.*' : 'Y' # 'Please read the Terms of Service at....? \[Y\/n\]'
           '.*share your email.*' : 'N' # 'as if you want to share your email with EFF  \[Y\/n\] '
           '.*activate HTTPS for.*' : '' # 'generate cert for all domains \[Y\/n\]'

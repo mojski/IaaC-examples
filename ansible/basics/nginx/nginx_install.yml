@@ -4,14 +4,14 @@
     - name: Update and upgrade apt packages
       become: true
       ansible.builtin.apt:
-        upgrade: yes
-        update_cache: yes
+        upgrade: true
+        update_cache: true
 
     - name: install nginx
       become: true
       ansible.builtin.apt:
         name: nginx
-        state: latest
+        state: present
 
     - name: start nginx
       ansible.builtin.service:
@@ -20,5 +20,6 @@
 
     - name: enable nginx
       become: true
-      ansible.builtin.command: |
-        sudo systemctl enable nginx
+      ansible.builtin.service:
+        name: nginx
+        enabled: true
