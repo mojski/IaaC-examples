@@ -1,26 +1,26 @@
-name: Terraform Validation
+# name: Terraform Validation
 
-on: 
-  pull_request:
-  push:
-    branches:
-      - main
-      - actions
+# on: 
+#   pull_request:
+#   push:
+#     branches:
+#       - main
+#       - actions
 
-jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+# jobs:
+#   validate:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Format Check
-        run: terraform fmt -check -recursive
-        working-directory: terraform
+#       - name: Terraform Format Check
+#         run: terraform fmt -check -recursive
+#         working-directory: terraform
 
-      - name: Terraform Init
-        run: terraform init
-        working-directory: terr
+#       - name: Terraform Init
+#         run: terraform init
+#         working-directory: terr

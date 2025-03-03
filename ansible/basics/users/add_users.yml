@@ -1,6 +1,6 @@
 - name: add users
   hosts: servers
-  become: yes
+  become: true
   tasks:
     - name: Include users
       include_vars:

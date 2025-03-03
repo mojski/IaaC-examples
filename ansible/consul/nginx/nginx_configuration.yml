@@ -20,7 +20,7 @@
     - name: link conf file
       ansible.builtin.command: >
         ln -s /etc/nginx/sites-available/consul.conf /etc/nginx/sites-enabled/
-      become: yes
+      become: true
 
     - name: restart nginx
       ansible.builtin.systemd:

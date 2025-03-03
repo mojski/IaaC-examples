@@ -18,7 +18,7 @@
         enabled: yes
         
     - name: mariaDB secure installation
-      become: yes
+      become: true
       ansible.builtin.expect:
         command: 'sudo mysql_secure_installation'
         responses:
@@ -33,7 +33,7 @@
   hosts: servers
   tasks:
     - name: bind ports
-      become: yes
+      become: true
       ansible.builtin.blockinfile:
         dest: /etc/mysql/my.cnf
         block: |
@@ -43,7 +43,7 @@
   hosts: servers
   tasks:
     - name: restart maria db
-      become: yes
+      become: true
       ansible.builtin.command: systemctl restart mariadb
 
 # totally remove:

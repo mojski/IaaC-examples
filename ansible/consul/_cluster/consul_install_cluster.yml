@@ -3,7 +3,7 @@
   hosts: all
   tasks:
     - name: Install unzip gnupg2 curl wget
-      become: yes
+      become: true
       ansible.builtin.apt:
         name:
           - unzip
@@ -27,16 +27,16 @@
     - name: Move binaries
       ansible.builtin.command: >
         mv /tmp/{{consul_file}} /usr/local/bin/
-      become: yes
+      become: true
 
     - name: Create consul group
-      become: yes
+      become: true
       ansible.builtin.group:
         name: "{{ consul_group }}"
         state: present
 
     - name: Create consul user
-      become: yes
+      become: true
       ansible.builtin.user:
         name: "{{ consul_user }}"
         group: "{{ consul_group }}"
@@ -46,7 +46,7 @@
         shell: /bin/bash
 
     - name: Create directories
-      become: yes
+      become: true
       ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
@@ -55,24 +55,24 @@
         - /etc/consul.d
 
     - name: create systemd service file
-      become: yes
+      become: true
       ansible.builtin.template:
         src: ./templates/consul.service.j2
         dest: /etc/systemd/system/consul.service
 
     - name: Reload systemd
-      become: yes
+      become: true
       ansible.builtin.systemd:
         daemon_reload: yes
 
     - name: create consul.json file
-      become: yes
+      become: true
       ansible.builtin.template:
         src: ./templates/config.j2
         dest: /etc/consul.d/config.json
 
     - name: change owner for created directories and files
-      become: yes
+      become: true
       ansible.builtin.file:
         path: "{{ item }}"
         owner: "{{ consul_user }}"
@@ -84,7 +84,7 @@
         - /etc/consul.d/config.json
 
     - name: Start and enable consul service
-      become: yes
+      become: true
       ansible.builtin.systemd:
         name: consul
         enabled: yes

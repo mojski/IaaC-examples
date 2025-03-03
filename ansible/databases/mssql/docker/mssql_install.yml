@@ -1,7 +1,7 @@
 ---
 - name: run mssql container
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: Create a temporary directory if it does not exist
       ansible.builtin.file:

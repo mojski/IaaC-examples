@@ -3,48 +3,51 @@
   hosts: servers
   tasks:
     - name: update apt
-      become: yes
-      ansible.builtin.command: |
-        apt update
+      become: true
+      ansible.builtin.command:
+        cmd: apt update
 
     - name: install curl certificates
-      become: yes
-      ansible.builtin.command: |
-        apt-get install ca-certificates curl
+      become: true
+      ansible.builtin.command:
+        cmd: apt-get install ca-certificates curl -y
 
     - name: install keyrings
-      become: yes
-      ansible.builtin.command: |
-        install -m 0755 -d /etc/apt/keyrings
+      become: true
+      ansible.builtin.command:
+        cmd: install -m 0755 -d /etc/apt/keyrings
 
     - name: download gpg keys
-      become: yes
-      ansible.builtin.command: |
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+      become: true
+      ansible.builtin.command:
+        cmd: curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 
     - name: change mode to 
-      become: yes
-      ansible.builtin.command: |
-        chmod a+r /etc/apt/keyrings/docker.asc
+      become: true
+      ansible.builtin.command:
+        cmd: chmod a+r /etc/apt/keyrings/docker.asc
 
     - name: add docker repo to apt
+      become: true
       ansible.builtin.shell: |
-        echo \
-          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-          $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-          sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    - name: update apt again
+      become: true
+      ansible.builtin.command:
+        cmd: apt update
 
     - name: install docker
-      become: yes
-      ansible.builtin.command: |
-        apt install docker.io -y
+      become: true
+      ansible.builtin.command:
+        cmd: apt install docker.io -y
 
     - name: install docker-compose
-      become: yes
-      ansible.builtin.command: |
-        apt install docker-compose -y
+      become: true
+      ansible.builtin.command:
+        cmd: apt install docker-compose -y
 
-    - name: enable using docker to none root user
-      become: yes
-      ansible.builtin.command: |
-        chmod "{{the_number_of_the_beast}}" /var/run/docker.sock
+    - name: enable using docker to non-root user
+      become: true
+      ansible.builtin.command:
+        cmd: chmod 666 /var/run/docker.sock

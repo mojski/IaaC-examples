@@ -3,12 +3,12 @@
   hosts: servers
   tasks:
     - name: update apt
-      become: yes
+      become: true
       ansible.builtin.command: |
         apt update
     
     - name: Install unzip gnupg2 curl wget
-      become: yes
+      become: true
       ansible.builtin.apt:
         name:
           - unzip
@@ -32,16 +32,16 @@
     - name: Move binaries
       ansible.builtin.command: >
         mv /tmp/{{consul_file}} /usr/local/bin/
-      become: yes
+      become: true
 
     - name: Create consul group
-      become: yes
+      become: true
       ansible.builtin.group:
         name: "{{ consul_group }}"
         state: present
 
     - name: Create consul user
-      become: yes
+      become: true
       ansible.builtin.user:
         name: "{{ consul_user }}"
         group: "{{ consul_group }}"
@@ -51,7 +51,7 @@
         shell: /bin/bash
 
     - name: Create directories
-      become: yes
+      become: true
       ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
@@ -60,31 +60,31 @@
         - /etc/consul.d
 
     - name: Copy consul systemd service file
-      become: yes
+      become: true
       ansible.builtin.copy:
         src: ./files/consul.service
         dest: /etc/systemd/system/
 
     - name: Reload systemd
-      become: yes
+      become: true
       ansible.builtin.systemd:
         daemon_reload: yes
 
     - name: Copy consul config file
-      become: yes
+      become: true
       ansible.builtin.copy:
         src: ./files/config.json
         dest: /etc/consul.d/config.json
 
     - name: Set secret
-      become: yes
+      become: true
       ansible.builtin.lineinfile:
         path: /etc/consul.d/config.json
         regexp: '"encrypt": "key"'
         line: '"encrypt": "{{consul_encrypt_key}}"'
 
     - name: Change owner for created directories and files
-      become: yes
+      become: true
       ansible.builtin.file:
         path: "{{ item }}"
         owner: "{{ consul_user }}"
@@ -97,7 +97,7 @@
 
     # TODO finish configuration
     - name: Start and enable consul service
-      become: yes
+      become: true
       ansible.builtin.systemd:
         name: consul
         enabled: yes

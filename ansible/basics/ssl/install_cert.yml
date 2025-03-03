@@ -2,12 +2,12 @@
   hosts: servers
   tasks:
     - name: update apt
-      become: yes
+      become: true
       command: |
         apt update
     
     - name: Install Python and dependencies
-      become: yes
+      become: true
       apt:
         name:
           - python3
@@ -17,18 +17,18 @@
         update_cache: yes
     
     - name: install certbot
-      become: yes
+      become: true
       shell: |
         /opt/certbot/bin/pip install certbot certbot-apache
         /opt/certbot/bin/pip install certbot certbot-nginx
 
     - name: link files
-      become: yes
+      become: true
       shell: |
         ln -s /opt/certbot/bin/certbot /usr/bin/certbot
 
     - name: install certbot for nginx
-      become: yes
+      become: true
       expect:
         command: 'certbot --nginx'
         responses:
