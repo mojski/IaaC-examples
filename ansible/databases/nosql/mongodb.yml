@@ -2,7 +2,7 @@
 # Adapted from https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/#std-label-install-mdb-community-ubuntu
 - name: MongoDB install
   hosts: servers
-  become: yes
+  become: true
   tasks:
     - name: install curl
       ansible.builtin.command: |

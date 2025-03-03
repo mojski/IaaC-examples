@@ -2,7 +2,7 @@
 # based on https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-20-04
 - name: install redis
   hosts: servers
-  become: yes
+  become: true
   tasks:
     - name: install curl
       ansible.builtin.command: |

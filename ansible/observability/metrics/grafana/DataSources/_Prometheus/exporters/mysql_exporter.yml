@@ -2,7 +2,7 @@
 # and https://computingforgeeks.com/install-and-configure-prometheus-mysql-exporter-on-ubuntu-centos/
 - name: Install mysql/mariaDb Exporter
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: Create mysql exporter user
       ansible.builtin.user:
@@ -76,7 +76,7 @@
         state: started
 
     - name: add node exporter configuration
-      become: yes
+      become: true
       ansible.builtin.blockinfile: 
         dest: /etc/prometheus/prometheus.yml
         marker: "# {mark} ANSIBLE MANAGED BLOCK mysql exporter 1"

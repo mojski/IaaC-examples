@@ -2,7 +2,7 @@
 # Adapted from https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-20-04
 - name: install elastic search
   hosts: servers
-  become: yes
+  become: true
   tasks:
     - name: install curl
       ansible.builtin.command: |

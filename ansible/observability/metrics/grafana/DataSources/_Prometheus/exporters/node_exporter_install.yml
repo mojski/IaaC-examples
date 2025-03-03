@@ -1,7 +1,7 @@
 ---
 - name: Install Node Exporter
   hosts: all
-  become: yes
+  become: true
 
   tasks:
     - name: Create Node Exporter user
@@ -23,7 +23,7 @@
     - name: Move Node Exporter binary
       ansible.builtin.command: >
         mv /tmp/node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
-      become: yes
+      become: true
 
     - name: Create Node Exporter systemd service
       ansible.builtin.copy:
@@ -53,7 +53,7 @@
         enabled: yes
         state: started
     - name: add node exporter configuration
-      become: yes
+      become: true
       ansible.builtin.blockinfile: 
         dest: /etc/prometheus/prometheus.yml
         marker: "# {mark} ANSIBLE MANAGED BLOCK node exporter"

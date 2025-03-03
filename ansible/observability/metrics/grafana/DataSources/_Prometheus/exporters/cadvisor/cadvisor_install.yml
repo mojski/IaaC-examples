@@ -1,7 +1,7 @@
 ---
 - name: run cAdvisor on linux machine
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: Create a directory if it does not exist
       ansible.builtin.file:
@@ -26,7 +26,7 @@
       ansible.builtin.shell: sh /tmp/cadvisor/run_docker_compose.sh
     
     - name: add cadvisor exporter configuration
-      become: yes
+      become: true
       ansible.builtin.blockinfile: 
         dest: /etc/prometheus/prometheus.yml
         marker: "# {mark} ANSIBLE MANAGED BLOCK cadvisor exporter"

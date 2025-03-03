@@ -19,6 +19,6 @@
         state: started
 
     - name: enable nginx
-      become: yes
+      become: true
       ansible.builtin.command: |
         sudo systemctl enable nginx
