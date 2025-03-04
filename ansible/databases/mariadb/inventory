@@ -1,5 +1,5 @@
 [servers]
-0.0.0.0 ansible_ssh_user=user_name
+40.69.93.103 ansible_ssh_user=mojski
 [servers:vars]
 root_password=P@ssw0rd
 databases=[{"user": "user1", "password": "password1", "database": "db1"},{"user": "user2", "password": "password2", "database": "db2"}]

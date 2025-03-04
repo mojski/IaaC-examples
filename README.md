@@ -6,17 +6,19 @@
 - **29/06/2024**: Added monitoring with Grafana, Prometheus, and Node Exporter playbooks; added SEQ `docker-compose.yml`.
 - **08/2024**: More Grafana integrations via Prometheus exporter, all-in-one Jaeger instance, Terraform script for creating Cosmos DB free instance, Ansible playbooks for MariaDB, MSSQL, Elasticsearch, and MongoDB.
 - **19/08/2024**: Consul installation and Terraform VMs refactoring.
+- **03/2025**: Add ansible lint to github pipline with refactor ansible playbooks
+
 
 ## Terraform and Ansible
 
 Both tools are similar but are often used in combination:
 - Terraform for provisioning infrastructure.
 
-  ![Terraform](/assets/terr.png)
+  ![Terraform](/docs/terr.png)
 
 - Ansible for configuration.
 
-  ![Ansible](/assets/ans.png)
+  ![Ansible](/docs/ans.png)
 
 Creating infrastructure with tools like Ansible and Terraform ensures repeatability, documentation, and convenience. This approach is known as Infrastructure as Code (IaC).
 
@@ -61,7 +63,7 @@ Creating infrastructure with tools like Ansible and Terraform ensures repeatabil
 
 5. The console will display the IP of the new machine:
 
-   ![New Machine IP](/assets/image.png)
+   ![New Machine IP](/docs/image.png)
 
    Connect to the user retrieved from `variables.tf` using an SSH connection. You should connect without a password and have root privileges.
 
@@ -73,7 +75,7 @@ Creating infrastructure with tools like Ansible and Terraform ensures repeatabil
    terraform apply "main.destroy.tfplan"
    ```
 
-   ![Destroy Plan](/assets/image-1.png)
+   ![Destroy Plan](/docs/image-1.png)
 
 ## Using Ansible
 Before removing the machine, you can customize it with Ansible scripts (e.g., install Docker or Nginx).

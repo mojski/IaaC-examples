@@ -4,52 +4,52 @@
   hosts: all
   become: true
   tasks:
-    - name: Create mysql exporter user
-      ansible.builtin.user:
-        name: mysqld_exporter
-        shell: /bin/false
-# variables
+#     - name: Create mysql exporter user
+#       ansible.builtin.user:
+#         name: mysqld_exporter
+#         shell: /bin/false
+# # variables
 
-    - name: Create mysql user
-      ansible.builtin.command: |
-        mysql -e "CREATE USER 'mysqld_exporter'@'localhost' IDENTIFIED BY 'StrongPassword' WITH MAX_USER_CONNECTIONS 2;"
-      tags:
-        - skip_ansible_lint
+#     - name: Create mysql user
+#       ansible.builtin.command: |
+#         mysql -e "CREATE USER 'mysqld_exporter'@'localhost' IDENTIFIED BY 'StrongPassword' WITH MAX_USER_CONNECTIONS 2;"
+#       tags:
+#         - skip_ansible_lint
 
-    - name: Add permissions
-      ansible.builtin.command: |
-        mysql -e "GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'mysqld_exporter'@'localhost';"
-      tags:
-        - skip_ansible_lint
+#     - name: Add permissions
+#       ansible.builtin.command: |
+#         mysql -e "GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'mysqld_exporter'@'localhost';"
+#       tags:
+#         - skip_ansible_lint
 
-    - name: Flush
-      ansible.builtin.command: |
-        mysql -e "FLUSH PRIVILEGES;"
-      tags:
-        - skip_ansible_lint
+#     - name: Flush
+#       ansible.builtin.command: |
+#         mysql -e "FLUSH PRIVILEGES;"
+#       tags:
+#         - skip_ansible_lint
 
-    - name: Create mysqld credentials
-      ansible.builtin.copy:
-        dest: /etc/.mysqld_exporter.cnf
-        content: |
-          [client]
-          user=mysqld_exporter
-          password=StrongPassword
-        owner: root
-        group: root
-        mode: '0644'
+#     - name: Create mysqld credentials
+#       ansible.builtin.copy:
+#         dest: /etc/.mysqld_exporter.cnf
+#         content: |
+#           [client]
+#           user=mysqld_exporter
+#           password=StrongPassword
+#         owner: root
+#         group: root
+#         mode: '0644'
 
-    - name: Create my sql exporter systemd service
-      ansible.builtin.copy:
-        src: mysql_exporter_service.ini
-        dest: /etc/systemd/system/mysqld_exporter.service
-        owner: root
-        group: root
-        mode: '0644'
+#     - name: Create my sql exporter systemd service
+#       ansible.builtin.copy:
+#         src: mysql_exporter_service.ini
+#         dest: /etc/systemd/system/mysqld_exporter.service
+#         owner: root
+#         group: root
+#         mode: '0644'
 
     - name: Download latest mysqld_exporter release
       ansible.builtin.get_url:
-        url: "https://github.com/prometheus/mysqld_exporter/releases/latest/download/mysqld_exporter-{{ exporter_version }}.linux-amd64.tar.gz"
+        url: "https://github.com/prometheus/mysqld_exporter/releases/latest/download/mysqld_exporter-{{ mysql_exporter_version }}.linux-amd64.tar.gz"
         dest: /tmp/mysqld_exporter.tar.gz
         mode: '0644'
 
@@ -59,7 +59,7 @@
         dest: /usr/local/bin/
         remote_src: true
         creates: /usr/local/bin/mysqld_exporter
-
+# TODO fix this
     - name: Set executable permissions for mysqld_exporter
       ansible.builtin.file:
         path: mysqld_exporter-*.linux-amd64/mysqld_exporter
