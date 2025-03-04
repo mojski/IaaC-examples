@@ -15,21 +15,21 @@
     - name: Update source list
       ansible.builtin.shell: |
         echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-    
+
     - name: Update apt cache
       ansible.builtin.apt:
-        update_cache: yes
-    
+        update_cache: true
+
     - name: Install MongoDB
       ansible.builtin.apt:
         name: mongodb-org
         state: present
-        update_cache: yes
-    
+        update_cache: true
+
     - name: Ensure mongodb is running and and enabled to start automatically on reboots
-      ansible.builtin.service: 
-        name: mongod 
-        enabled: yes
+      ansible.builtin.service:
+        name: mongod
+        enabled: true
         state: started
 
 # totally remove:

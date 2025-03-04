@@ -7,20 +7,29 @@
       ansible.builtin.file:
         path: /tmp/mssql
         state: directory
+        user: root
+        group: root
         mode: '0755'
 
     - name: Copy docker compose to location
       ansible.builtin.copy:
         src: docker-compose.yml
         dest: /tmp/mssql/docker-compose.yml
-
-    # it is hack, should use newer version of ansible and community docker module
-    - name: Create shell script to run docker 
+        user: root
+        group: root
+        mode: '0755'
+# TODO create user for docker
+# it is hack, should use newer version of ansible and community docker module
+    - name: Create shell script to run docker
       ansible.builtin.copy:
         dest: /tmp/mssql/run_docker_compose.sh
         content: |
           #!/bin/bash
           docker-compose -f /tmp/mssql/docker-compose.yml up -d
+      tags:
+        - skip_ansible_lint
 
     - name: Run shell script on remote server
       ansible.builtin.shell: sh /tmp/mssql/run_docker_compose.sh
+      tags:
+        - skip_ansible_lint
