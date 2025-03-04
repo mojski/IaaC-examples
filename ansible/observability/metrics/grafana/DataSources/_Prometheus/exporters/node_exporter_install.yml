@@ -13,6 +13,9 @@
       ansible.builtin.get_url:
         url: https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
         dest: /tmp/node_exporter.tar.gz
+        owner: root
+        group: root
+        mode: '0755'
 
     - name: Extract Node Exporter
       ansible.builtin.unarchive:
