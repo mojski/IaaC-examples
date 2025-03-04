@@ -24,14 +24,24 @@
       ansible.builtin.unarchive:
         src: /tmp/{{ consul_zip_file }}
         dest: /tmp/
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
         remote_src: true
       changed_when: false
 
-    - name: Move binaries
-      ansible.builtin.command: >
-        mv /tmp/{{ consul_file }} /usr/local/bin/
+    - name: Copy consul binary to /usr/local/bin
       become: true
-      changed_when: false
+      ansible.builtin.copy:
+        src: /tmp/{{ consul_file }}
+        dest: /usr/local/bin/{{ consul_file }}
+        mode: '0755'
+
+    - name: Remove consul binary from /tmp
+      become: true
+      ansible.builtin.file:
+        path: /tmp/{{ consul_file }}
+        state: absent
 
     - name: Create consul group
       become: true
@@ -56,6 +66,9 @@
       ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
       with_items:
         - /var/lib/consul
         - /etc/consul.d

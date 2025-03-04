@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - consul-lint-fixes
 
 jobs:
   lint:
