@@ -4,7 +4,7 @@
   tasks:
     - name: Update APT package index
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
 
     - name: Install MariaDB server
       ansible.builtin.apt:
@@ -15,36 +15,39 @@
       ansible.builtin.systemd:
         name: mariadb
         state: started
-        enabled: yes
-        
-    - name: mariaDB secure installation
+        enabled: true
+
+    - name: MariaDB secure installation
       become: true
       ansible.builtin.expect:
         command: 'sudo mysql_secure_installation'
         responses:
-          password: "{{root_password}}"
+          password: "{{ root_password }}"
           '.*password for root.*': '' # 'Enter current password for root \(enter for none\)\:'
-          '.*root password.*' : 'N' # 'Set root password? \[Y\/n\]'
-          '.*anonymous.*' : 'Y' # 'Remove anonymous users? \[Y\/n\] '
-          '.*root login.*' : 'Y' # 'Disallow root login remotely? \[Y\/n\]'
-          '.*test database.*' : 'Y' # 'Remove test database and access to it? \[Y\/n\]'
-          '.*privilege tables.*' : 'Y' # 'Reload privilege tables now? \[Y\/n\]'
-- name: configure mariadb
+          '.*root password.*': 'N' # 'Set root password? \[Y\/n\]'
+          '.*anonymous.*': 'Y' # 'Remove anonymous users? \[Y\/n\] '
+          '.*root login.*': 'Y' # 'Disallow root login remotely? \[Y\/n\]'
+          '.*test database.*': 'Y' # 'Remove test database and access to it? \[Y\/n\]'
+          '.*privilege tables.*': 'Y' # 'Reload privilege tables now? \[Y\/n\]'
+- name: Configure mariadb
   hosts: servers
   tasks:
-    - name: bind ports
+    - name: Bind ports
       become: true
       ansible.builtin.blockinfile:
         dest: /etc/mysql/my.cnf
         block: |
           [mysqld]
           bind-address=0.0.0.0
-- name: restart maria db
+
+- name: Restart maria db
   hosts: servers
   tasks:
-    - name: restart maria db
+    - name: Restart MariaDB
       become: true
-      ansible.builtin.command: systemctl restart mariadb
+      ansible.builtin.systemd:
+        name: mariadb
+        state: restarted
 
 # totally remove:
 # systemctl stop mariadb
