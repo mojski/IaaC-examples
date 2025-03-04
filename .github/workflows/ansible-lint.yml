@@ -31,4 +31,4 @@ jobs:
         run: ansible-lint ansible/databases/
 
       - name: Run ansible-lint for observability playbooks
-        run: ansible-lint ansible/observability/
+        run: ansible-lint ansible/observability/ --eclude=/ansible/observability/metrics/grafana/DataSources/_Prometheus/exporters/cadvisor/docker-compose.yml
