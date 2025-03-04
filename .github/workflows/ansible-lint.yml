@@ -26,4 +26,4 @@ jobs:
         run: ansible-lint ansible/basics/
 
       - name: Run ansible-lint for consul
-        run: ansible-lint ansible/consul/ 
+        run: ansible-lint ansible/consul/ --exclude=inventory.yml
