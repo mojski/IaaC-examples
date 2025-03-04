@@ -1,40 +1,50 @@
 # Playbook for Ubuntu 20.04
 # Adapted from https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-20-04
-- name: Install elastic search
+- name: Install Elasticsearch
   hosts: servers
   become: true
   tasks:
-    - name: Install curl
-      ansible.builtin.command: |
-        apt-get install gnupg curl -y
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - gnupg
+          - curl
+        state: present
+        update_cache: true
 
-    - name: Import elastic search public GPG key and save to keyring
-      ansible.builtin.shell: |
-        curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+    - name: Download Elasticsearch public GPG key
+      ansible.builtin.get_url:
+        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        dest: /usr/share/keyrings/elasticsearch-keyring.gpg
+        mode: '0644'
 
-    - name: Update source list
-      ansible.builtin.shell: |
-        echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
-    
+    - name: Add Elasticsearch repository to sources list
+      ansible.builtin.lineinfile:
+        path: /etc/apt/sources.list.d/elastic-7.x.list
+        line: "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/7.x/apt stable main"
+        create: true
+        mode: '0644'
+
     - name: Update apt cache
       ansible.builtin.apt:
-        update_cache: yes
-    
-    - name: Install elastic search
+        update_cache: true
+
+    - name: Install Elasticsearch
       ansible.builtin.apt:
         name: elasticsearch
         state: present
-        update_cache: yes
-    
-    - name: Set elastic search config yaml file
+
+    - name: Configure Elasticsearch to listen on localhost
       ansible.builtin.lineinfile:
         path: /etc/elasticsearch/elasticsearch.yml
         line: "network.host: localhost"
-    
-    - name: Ensure elasticsearch is running and and enabled to start automatically on reboots
-      ansible.builtin.service: 
-        name: elasticsearch 
-        enabled: yes
+        create: true
+        mode: '0644'
+
+    - name: Ensure Elasticsearch is running and enabled on boot
+      ansible.builtin.service:
+        name: elasticsearch
+        enabled: true
         state: started
 
 # totally remove:
