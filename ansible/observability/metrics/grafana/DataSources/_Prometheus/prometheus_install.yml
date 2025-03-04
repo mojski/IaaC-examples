@@ -12,6 +12,9 @@
       ansible.builtin.get_url:
         url: "{{ prometheus_release }}"
         dest: /tmp/prometheus.tar.gz
+        owner: root
+        group: root
+        mode: '0755'
 
     - name: Extract Prometheus
       ansible.builtin.unarchive:
