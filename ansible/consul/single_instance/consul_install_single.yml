@@ -22,6 +22,9 @@
       ansible.builtin.get_url:
         url: "{{ consul_release }}"
         dest: /tmp/{{ consul_zip_file }}
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
 
     - name: Extract
       ansible.builtin.unarchive:
