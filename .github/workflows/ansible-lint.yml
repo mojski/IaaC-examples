@@ -21,5 +21,8 @@ jobs:
       - name: Install ansible-lint
         run: pip install ansible ansible-lint
 
-      - name: Run ansible-lint
-        run: ansible-lint ansible/basics/ --exclude=inventory/ansible/basics/users/users.yml
+      - name: Run ansible-lint for basics jobs
+        run: ansible-lint ansible/basics/
+
+      - name: Run ansible-lint for consul
+        run: ansible-lint ansible/consul/ --exclude=/ansible/consul/_cluster/inventory.yml

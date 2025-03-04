@@ -1,5 +1,5 @@
 # based on https://www.atlantic.net/vps-hosting/how-to-install-consul-server-on-ubuntu/
-- name: install consul cluster
+- name: Install consul cluster
   hosts: all
   tasks:
     - name: Install unzip gnupg2 curl wget
@@ -18,20 +18,33 @@
       ansible.builtin.get_url:
         url: "{{ consul_release }}"
         dest: /tmp/{{ consul_zip_file }}
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
       changed_when: false
 
     - name: Extract
       ansible.builtin.unarchive:
         src: /tmp/{{ consul_zip_file }}
         dest: /tmp/
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
         remote_src: true
       changed_when: false
 
-    - name: Move binaries
-      ansible.builtin.command: >
-        mv /tmp/{{ consul_file }} /usr/local/bin/
+    - name: Copy consul binary to /usr/local/bin
       become: true
-      changed_when: false
+      ansible.builtin.copy:
+        src: /tmp/{{ consul_file }}
+        dest: /usr/local/bin/{{ consul_file }}
+        mode: '0755'
+
+    - name: Remove consul binary from /tmp
+      become: true
+      ansible.builtin.file:
+        path: /tmp/{{ consul_file }}
+        state: absent
 
     - name: Create consul group
       become: true
@@ -56,16 +69,22 @@
       ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
       with_items:
         - /var/lib/consul
         - /etc/consul.d
       changed_when: false
 
-    - name: create systemd service file
+    - name: Create systemd service file
       become: true
       ansible.builtin.template:
         src: ./templates/consul.service.j2
         dest: /etc/systemd/system/consul.service
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '0644'
       changed_when: false
 
     - name: Reload systemd
@@ -74,14 +93,17 @@
         daemon_reload: true
       changed_when: false
 
-    - name: create consul.json file
+    - name: Create consul.json file
       become: true
       ansible.builtin.template:
         src: ./templates/config.j2
         dest: /etc/consul.d/config.json
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
       changed_when: false
 
-    - name: change owner for created directories and files
+    - name: Change owner for created directories and files
       become: true
       ansible.builtin.file:
         path: "{{ item }}"

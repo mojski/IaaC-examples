@@ -4,9 +4,9 @@
   tasks:
     - name: Update apt
       become: true
-      ansible.builtin.command: |
-        apt update
-    
+      ansible.builtin.apt:
+        update_cache: true
+
     - name: Install unzip gnupg2 curl wget
       become: true
       ansible.builtin.apt:
@@ -16,23 +16,34 @@
           - curl
           - wget
         state: present
-        update_cache: yes
+        update_cache: true
 
     - name: Download consul release
       ansible.builtin.get_url:
-        url: "{{consul_release}}"
-        dest: /tmp/{{consul_zip_file}}
+        url: "{{ consul_release }}"
+        dest: /tmp/{{ consul_zip_file }}
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
 
     - name: Extract
       ansible.builtin.unarchive:
-        src: /tmp/{{consul_zip_file}}
+        src: /tmp/{{ consul_zip_file }}
         dest: /tmp/
-        remote_src: yes
+        remote_src: true
 
-    - name: Move binaries
-      ansible.builtin.command: >
-        mv /tmp/{{consul_file}} /usr/local/bin/
+    - name: Copy consul binary to /usr/local/bin
       become: true
+      ansible.builtin.copy:
+        src: /tmp/{{ consul_file }}
+        dest: /usr/local/bin/{{ consul_file }}
+        mode: '0755'
+
+    - name: Remove consul binary from /tmp
+      become: true
+      ansible.builtin.file:
+        path: /tmp/{{ consul_file }}
+        state: absent
 
     - name: Create consul group
       become: true
@@ -46,7 +57,7 @@
         name: "{{ consul_user }}"
         group: "{{ consul_group }}"
         state: present
-        createhome: yes
+        createhome: true
         home: /home/{{ consul_user }}
         shell: /bin/bash
 
@@ -55,6 +66,9 @@
       ansible.builtin.file:
         dest: "{{ item }}"
         state: directory
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
       with_items:
         - /var/lib/consul
         - /etc/consul.d
@@ -64,24 +78,30 @@
       ansible.builtin.copy:
         src: ./files/consul.service
         dest: /etc/systemd/system/
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
 
     - name: Reload systemd
       become: true
       ansible.builtin.systemd:
-        daemon_reload: yes
+        daemon_reload: true
 
     - name: Copy consul config file
       become: true
       ansible.builtin.copy:
         src: ./files/config.json
         dest: /etc/consul.d/config.json
+        owner: "{{ consul_user }}"
+        group: "{{ consul_group }}"
+        mode: '755'
 
     - name: Set secret
       become: true
       ansible.builtin.lineinfile:
         path: /etc/consul.d/config.json
         regexp: '"encrypt": "key"'
-        line: '"encrypt": "{{consul_encrypt_key}}"'
+        line: '"encrypt": "{{ consul_encrypt_key }}"'
 
     - name: Change owner for created directories and files
       become: true
@@ -100,5 +120,5 @@
       become: true
       ansible.builtin.systemd:
         name: consul
-        enabled: yes
+        enabled: true
         state: started
