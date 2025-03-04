@@ -13,14 +13,22 @@
       ansible.builtin.copy:
         src: docker-compose.yml
         dest: /tmp/seq/docker-compose.yml
+        user: root
+        group: root
+        mode: '0755'
 
     # it is hack, should use newer version of ansible and community docker module
-    - name: Create shell script to run docker 
+    - name: Create shell script to run docker
       ansible.builtin.copy:
         dest: /tmp/seq/run_docker_compose.sh
         content: |
           #!/bin/bash
           docker-compose -f /tmp/seq/docker-compose.yml up -d
+        user: root
+        group: root
+        mode: '0755'
 
     - name: Run shell script on remote server
-      ansible.builtin.shell: sh /tmp/seq/run_docker_compose.sh
+      ansible.builtin.script:
+        src: /tmp/seq/run_docker_compose.sh
+      become: true

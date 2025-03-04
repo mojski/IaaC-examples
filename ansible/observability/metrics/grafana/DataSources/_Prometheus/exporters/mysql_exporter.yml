@@ -8,76 +8,94 @@
       ansible.builtin.user:
         name: mysqld_exporter
         shell: /bin/false
-    #variables
-    - name: create mysql user
+# variables
+
+    - name: Create mysql user
       ansible.builtin.command: |
         mysql -e "CREATE USER 'mysqld_exporter'@'localhost' IDENTIFIED BY 'StrongPassword' WITH MAX_USER_CONNECTIONS 2;"
+      tags:
+        - skip_ansible_lint
 
-    - name: add permissions
+    - name: Add permissions
       ansible.builtin.command: |
         mysql -e "GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'mysqld_exporter'@'localhost';"
+      tags:
+        - skip_ansible_lint
 
-    - name: flush
+    - name: Flush
       ansible.builtin.command: |
         mysql -e "FLUSH PRIVILEGES;"
+      tags:
+        - skip_ansible_lint
 
-    - name: create mysqld credentials
+    - name: Create mysqld credentials
       ansible.builtin.copy:
         dest: /etc/.mysqld_exporter.cnf
         content: |
           [client]
           user=mysqld_exporter
           password=StrongPassword
+        owner: root
+        group: root
+        mode: '0644'
 
     - name: Create my sql exporter systemd service
       ansible.builtin.copy:
+        src: mysql_exporter_service.ini
         dest: /etc/systemd/system/mysqld_exporter.service
-        content: |
-          [Unit]
-          Description=Prometheus MySQL Exporter
-          After=network.target
-          User=prometheus
-          Group=prometheus
+        owner: root
+        group: root
+        mode: '0644'
 
-          [Service]
-          Type=simple
-          Restart=always
-          ExecStart=/usr/local/bin/mysqld_exporter \
-          --config.my-cnf /etc/.mysqld_exporter.cnf \
-          --web.listen-address=0.0.0.0:9104
+    - name: Download latest mysqld_exporter release
+      ansible.builtin.get_url:
+        url: "https://github.com/prometheus/mysqld_exporter/releases/latest/download/mysqld_exporter-{{ exporter_version }}.linux-amd64.tar.gz"
+        dest: /tmp/mysqld_exporter.tar.gz
+        mode: '0644'
 
-          [Install]
-          WantedBy=multi-user.target
+    - name: Extract mysqld_exporter archive
+      ansible.builtin.unarchive:
+        src: /tmp/mysqld_exporter.tar.gz
+        dest: /usr/local/bin/
+        remote_src: true
+        creates: /usr/local/bin/mysqld_exporter
 
-    - name: download latest exporter 
-      ansible.builtin.shell: |
-        curl -s https://api.github.com/repos/prometheus/mysqld_exporter/releases/latest   | grep browser_download_url | grep linux-amd64 |  cut -d '"' -f 4 | wget -qi -
+    - name: Set executable permissions for mysqld_exporter
+      ansible.builtin.file:
+        path: mysqld_exporter-*.linux-amd64/mysqld_exporter
+        mode: '0755'
+      become: true
 
-    - name: extract 
-      ansible.builtin.shell: |
-        tar xvf mysqld_exporter-*.linux-amd64.tar.gz
+    - name: Copy mysql exporter binary to /usr/local/bin
+      ansible.builtin.copy:
+        src: mysqld_exporter-*.linux-amd64/mysqld_exporter
+        dest: /usr/local/bin/mysqld_exporter
+        owner: root
+        group: root
+        mode: '0755'
+        remote_src: true
+      become: true
 
-    - name: chmod as exec 
-      ansible.builtin.shell: |
-        chmod +x mysqld_exporter-*.linux-amd64/mysqld_exporter
+    - name: Remove original mysql exporter binary
+      ansible.builtin.file:
+        path: mysqld_exporter-*.linux-amd64/mysqld_exporter
+        state: absent
+      become: true
 
-    - name: Move mysql exporter binary
-      ansible.builtin.command: >
-        mv mv mysqld_exporter-*.linux-amd64/mysqld_exporter /usr/local/bin
 
     - name: Reload systemd
       ansible.builtin.systemd:
-        daemon_reload: yes
+        daemon_reload: true
 
     - name: Start and enable mysql exporter service
       ansible.builtin.systemd:
         name: mysqld_exporter
-        enabled: yes
+        enabled: true
         state: started
 
-    - name: add node exporter configuration
+    - name: Add node exporter configuration
       become: true
-      ansible.builtin.blockinfile: 
+      ansible.builtin.blockinfile:
         dest: /etc/prometheus/prometheus.yml
         marker: "# {mark} ANSIBLE MANAGED BLOCK mysql exporter 1"
         block: |2
@@ -85,8 +103,8 @@
               static_configs:
                 - targets: ['localhost:9104']
 
-    - name: restart prometheus
+    - name: Restart prometheus
       ansible.builtin.systemd:
         name: prometheus
-        enabled: yes
+        enabled: true
         state: restarted

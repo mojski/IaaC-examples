@@ -18,43 +18,45 @@
       ansible.builtin.unarchive:
         src: /tmp/node_exporter.tar.gz
         dest: /tmp/
-        remote_src: yes
+        remote_src: true
 
-    - name: Move Node Exporter binary
-      ansible.builtin.command: >
-        mv /tmp/node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
+    - name: Copy Node Exporter binary to /usr/local/bin
+      ansible.builtin.copy:
+        src: /tmp/node_exporter-1.5.0.linux-amd64/node_exporter
+        dest: /usr/local/bin/node_exporter
+        owner: root
+        group: root
+        mode: '0755'
+        remote_src: true
       become: true
 
-    - name: Create Node Exporter systemd service
+    - name: Remove original Node Exporter binary
+      ansible.builtin.file:
+        path: /tmp/node_exporter-1.5.0.linux-amd64/node_exporter
+        state: absent
+      become: true
+
+    - name: Create node exporter systemd service
       ansible.builtin.copy:
+        src: node_exporter_service.ini
         dest: /etc/systemd/system/node_exporter.service
-        content: |
-          [Unit]
-          Description=Node Exporter
-          Wants=network-online.target
-          After=network-online.target
-
-          [Service]
-          User=node_exporter
-          Group=node_exporter
-          Type=simple
-          ExecStart=/usr/local/bin/node_exporter
-
-          [Install]
-          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
 
     - name: Reload systemd
       ansible.builtin.systemd:
-        daemon_reload: yes
+        daemon_reload: true
 
     - name: Start and enable Node Exporter service
       ansible.builtin.systemd:
         name: node_exporter
-        enabled: yes
+        enabled: true
         state: started
-    - name: add node exporter configuration
+
+    - name: Add node exporter configuration
       become: true
-      ansible.builtin.blockinfile: 
+      ansible.builtin.blockinfile:
         dest: /etc/prometheus/prometheus.yml
         marker: "# {mark} ANSIBLE MANAGED BLOCK node exporter"
         block: |2
@@ -62,8 +64,8 @@
               static_configs:
                 - targets: ['localhost:9100']
 
-    - name: restart prometheus
+    - name: Restart prometheus
       ansible.builtin.systemd:
         name: prometheus
-        enabled: yes
+        enabled: true
         state: restarted

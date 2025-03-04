@@ -16,33 +16,43 @@
 
     - name: Update APT cache
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
 
     - name: Install Grafana
       ansible.builtin.apt:
         name: grafana
         state: present
-        
+
     - name: Setup grafana.ini
       ansible.builtin.lineinfile:
         path: /etc/grafana/grafana.ini
         regexp: '^;root_url = .*'
         line: 'root_url = %(protocol)s://%(domain)s:%(http_port)s/monitor/'
-        backrefs: yes
+        backrefs: true
 
     - name: Start and enable Grafana service
       ansible.builtin.systemd:
         name: grafana-server
-        enabled: yes
+        enabled: true
         state: started
 
-    - name: Backup default nginx config
-      ansible.builtin.command: mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
-    
+    - name: Backup default nginx config - copy
+      ansible.builtin.copy:
+        src: /etc/nginx/sites-available/default
+        dest: /etc/nginx/sites-available/default.backup
+        remote_src: true
+        mode: '0644'
+
+    - name: Backup default nginx config - remove original
+      ansible.builtin.file:
+        path: /etc/nginx/sites-available/default
+        state: absent
+
     - name: Copy nginx new nginx config to sites-available
       ansible.builtin.copy:
         src: grafana_nginx.conf
         dest: /etc/nginx/sites-available/default
+        mode: '0644'
 
     - name: Restart Nginx
       ansible.builtin.service:
