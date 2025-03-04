@@ -26,3 +26,6 @@ jobs:
 
       - name: Run ansible-lint for consul
         run: ansible-lint ansible/consul/ --exclude=/ansible/consul/_cluster/inventory.yml
+
+      - name: Run ansible-lint for database jobs
+        run: ansible-lint ansible/databases/
