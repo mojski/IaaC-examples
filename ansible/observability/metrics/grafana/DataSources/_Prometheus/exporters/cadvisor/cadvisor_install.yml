@@ -1,5 +1,5 @@
 ---
-- name: run cAdvisor on linux machine
+- name: Run cAdvisor on linux machine
   hosts: all
   become: true
   tasks:
@@ -13,21 +13,30 @@
       ansible.builtin.copy:
         src: docker-compose.yml
         dest: /tmp/cadvisor/docker-compose.yml
+        owner: root
+        group: root
+        mode: '0644'
+# TODO create user for docker
 
     # it is hack, should use newer version of ansible and community docker module
-    - name: create shell script to run docker 
+    - name: Create shell script to run docker
       ansible.builtin.copy:
         dest: /tmp/cadvisor/run_docker_compose.sh
         content: |
           #!/bin/bash
           docker-compose -f /tmp/cadvisor/docker-compose.yml up -d
+        owner: root
+        group: root
+        mode: '0644'
 
     - name: Run shell script on remote server
-      ansible.builtin.shell: sh /tmp/cadvisor/run_docker_compose.sh
-    
-    - name: add cadvisor exporter configuration
+      ansible.builtin.script:
+        src: /tmp/cadvisor/run_docker_compose.sh
       become: true
-      ansible.builtin.blockinfile: 
+
+    - name: Add cadvisor exporter configuration
+      become: true
+      ansible.builtin.blockinfile:
         dest: /etc/prometheus/prometheus.yml
         marker: "# {mark} ANSIBLE MANAGED BLOCK cadvisor exporter"
         block: |2
@@ -35,8 +44,8 @@
               static_configs:
                 - targets: ['localhost:8081']
 
-    - name: restart prometheus
+    - name: Restart prometheus
       ansible.builtin.systemd:
         name: prometheus
-        enabled: yes
+        enabled: true
         state: restarted

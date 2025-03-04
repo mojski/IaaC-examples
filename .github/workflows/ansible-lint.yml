@@ -29,3 +29,6 @@ jobs:
 
       - name: Run ansible-lint for database jobs
         run: ansible-lint ansible/databases/
+
+      - name: Run ansible-lint for observability playbooks
+        run: ansible-lint ansible/observability/

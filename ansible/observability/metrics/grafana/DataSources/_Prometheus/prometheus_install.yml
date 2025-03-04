@@ -10,23 +10,45 @@
 
     - name: Download Prometheus
       ansible.builtin.get_url:
-        url: "{{prometheus_release}}"
+        url: "{{ prometheus_release }}"
         dest: /tmp/prometheus.tar.gz
 
     - name: Extract Prometheus
       ansible.builtin.unarchive:
         src: /tmp/prometheus.tar.gz
         dest: /tmp/
-        remote_src: yes
+        remote_src: true
 
-    - name: Move Prometheus binaries
-      ansible.builtin.command: >
-        mv /tmp/prometheus-2.44.0.linux-amd64/prometheus /usr/local/bin/
+    - name: Copy Prometheus binary to /usr/local/bin
+      ansible.builtin.copy:
+        src: /tmp/prometheus-2.44.0.linux-amd64/prometheus
+        dest: /usr/local/bin/prometheus
+        owner: root
+        group: root
+        mode: '0755'
+        remote_src: true
       become: true
 
-    - name: Move Promtool binary
-      ansible.builtin.command: >
-        mv /tmp/prometheus-2.44.0.linux-amd64/promtool /usr/local/bin/
+    - name: Remove original Prometheus binary
+      ansible.builtin.file:
+        path: /tmp/prometheus-2.44.0.linux-amd64/prometheus
+        state: absent
+      become: true
+
+    - name: Copy Promtool binary to /usr/local/bin
+      ansible.builtin.copy:
+        src: /tmp/prometheus-2.44.0.linux-amd64/promtool
+        dest: /usr/local/bin/promtool
+        owner: root
+        group: root
+        mode: '0755'
+        remote_src: true
+      become: true
+
+    - name: Remove original Promtool binary
+      ansible.builtin.file:
+        path: /tmp/prometheus-2.44.0.linux-amd64/promtool
+        state: absent
       become: true
 
     - name: Create Prometheus directories
@@ -40,39 +62,36 @@
         - /etc/prometheus
         - /var/lib/prometheus
 
-    - name: Move Prometheus config
-      ansible.builtin.command: >
-        mv /tmp/prometheus-2.44.0.linux-amd64/prometheus.yml /etc/prometheus/
+    - name: Copy Prometheus config to /etc/prometheus
+      ansible.builtin.copy:
+        src: /tmp/prometheus-2.44.0.linux-amd64/prometheus.yml
+        dest: /etc/prometheus/prometheus.yml
+        owner: root
+        group: root
+        mode: '0644'
+        remote_src: true
       become: true
-      
+
+    - name: Remove original Prometheus config
+      ansible.builtin.file:
+        path: /tmp/prometheus-2.44.0.linux-amd64/prometheus.yml
+        state: absent
+      become: true
+
     - name: Create Prometheus systemd service
       ansible.builtin.copy:
+        src: prometheus_service.ini
         dest: /etc/systemd/system/prometheus.service
-        content: |
-          [Unit]
-          Description=Prometheus
-          Wants=network-online.target
-          After=network-online.target
-
-          [Service]
-          User=prometheus
-          Group=prometheus
-          Type=simple
-          ExecStart=/usr/local/bin/prometheus \
-            --config.file=/etc/prometheus/prometheus.yml \
-            --storage.tsdb.path=/var/lib/prometheus/ \
-            --web.console.templates=/etc/prometheus/consoles \
-            --web.console.libraries=/etc/prometheus/console_libraries
-
-          [Install]
-          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
 
     - name: Reload systemd
       ansible.builtin.systemd:
-        daemon_reload: yes
+        daemon_reload: true
 
     - name: Start and enable Prometheus service
       ansible.builtin.systemd:
         name: prometheus
-        enabled: yes
+        enabled: true
         state: started
