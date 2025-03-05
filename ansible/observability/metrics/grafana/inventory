@@ -1,5 +1,5 @@
 [servers]
-40.69.93.103 ansible_ssh_user=mojski
+0.0.0.0 ansible_ssh_user=user
 [servers:vars]
 grafana_apt_repository=https://packages.grafana.com/oss/deb
 grafana_gpg_key=https://packages.grafana.com/gpg.key
