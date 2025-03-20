@@ -32,7 +32,7 @@
 
     - name: Copy Node Exporter binary to /usr/local/bin
       ansible.builtin.copy:
-        src: /tmp/node_exporter-1.5.0.linux-amd64/node_exporter
+        src: /tmp/node_exporter-1.5.0.linux-amd64/node_exporter # TODO unhardcode it
         dest: /usr/local/bin/node_exporter
         owner: "{{ node_exporter_user }}"
         group: "{{ grafana_user_group }}"
@@ -40,17 +40,11 @@
         remote_src: true
       become: true
 
-    - name: Remove original Node Exporter binary
-      ansible.builtin.file:
-        path: /tmp/node_exporter-1.5.0.linux-amd64/node_exporter
-        state: absent
-      become: true
-
     - name: Create node exporter systemd service
-      ansible.builtin.copy:
-        src: node_exporter_service.ini
+      ansible.builtin.template:
+        src: ./templates/node_exporter_service.j2
         dest: /etc/systemd/system/node_exporter.service
-        owner: "{{ node_exporter_user }}"
+        owner: "{{ prometheus_user }}"
         group: "{{ grafana_user_group }}"
         mode: '0644'
 

@@ -57,7 +57,7 @@
 
     - name: Remove original Promtool binary
       ansible.builtin.file:
-        path: /tmp/prometheus-2.44.0.linux-amd64/promtool
+        path: /tmp/prometheus-2.44.0.linux-amd64/promtool # TODO unhardcode it
         state: absent
       become: true
 

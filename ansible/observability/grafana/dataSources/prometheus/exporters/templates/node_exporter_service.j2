@@ -4,8 +4,8 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-User=node_exporter
-Group=grafana
+User={{ node_exporter_user }}
+Group={{ grafana_user_group }}
 Type=simple
 ExecStart=/usr/local/bin/node_exporter
 
