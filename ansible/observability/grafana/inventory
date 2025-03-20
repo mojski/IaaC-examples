@@ -21,4 +21,5 @@ grafana_subdomain=monitor
 prometheus_user=prometheus
 node_exporter_user=node_exporter
 prometheus_release=https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz
+node_exporter_release=https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
 mysql_exporter_version=0.17.2/

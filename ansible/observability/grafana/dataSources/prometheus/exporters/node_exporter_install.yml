@@ -4,17 +4,24 @@
   become: true
 
   tasks:
-    - name: Create Node Exporter user
+    - name: Add monitoring user group
+      ansible.builtin.group:
+        name: "{{ grafana_user_group }}"
+        state: present
+
+    - name: Add grafana user in grafana group
       ansible.builtin.user:
-        name: node_exporter
-        shell: /bin/false
+        name: "{{ node_exporter_user }}"
+        group: "{{ grafana_user_group }}"
+        shell: /usr/sbin/nologin
+        system: true
 
     - name: Download Node Exporter
       ansible.builtin.get_url:
-        url: https://github.com/prometheus/node_exporter/releases/download/v1.5.0/node_exporter-1.5.0.linux-amd64.tar.gz
+        url: "{{ node_exporter_release }}"
         dest: /tmp/node_exporter.tar.gz
-        owner: root
-        group: root
+        owner: "{{ node_exporter_user }}"
+        group: "{{ grafana_user_group }}"
         mode: '0755'
 
     - name: Extract Node Exporter
@@ -27,8 +34,8 @@
       ansible.builtin.copy:
         src: /tmp/node_exporter-1.5.0.linux-amd64/node_exporter
         dest: /usr/local/bin/node_exporter
-        owner: root
-        group: root
+        owner: "{{ node_exporter_user }}"
+        group: "{{ grafana_user_group }}"
         mode: '0755'
         remote_src: true
       become: true
@@ -43,8 +50,8 @@
       ansible.builtin.copy:
         src: node_exporter_service.ini
         dest: /etc/systemd/system/node_exporter.service
-        owner: root
-        group: root
+        owner: "{{ node_exporter_user }}"
+        group: "{{ grafana_user_group }}"
         mode: '0644'
 
     - name: Reload systemd
