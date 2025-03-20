@@ -34,14 +34,14 @@
         name: grafana
         state: present
 
-    - name: change owner for systemd file
+    - name: Change owner for systemd file
       ansible.builtin.file:
         path: /lib/systemd/system/grafana-server.service
         owner: "{{ grafana_user }}"
         group: "{{ grafana_user_group }}"
         mode: '0644'
 
-    - name: change binary owner
+    - name: Change binary owner
       ansible.builtin.file:
         path: /usr/share/grafana
         owner: "{{ grafana_user }}"
@@ -54,12 +54,12 @@
         enabled: true
         state: started
 
-    - name: create nginx config file for grafana
+    - name: Create nginx config file for grafana
       ansible.builtin.template:
         src: ./templates/nginx.j2
         dest: /etc/nginx/sites-available/{{ grafana_subdomain }}.{{ domain_name }}
         mode: '0644'
-    
+
     - name: Create a symbolic link
       ansible.builtin.file:
         src: /etc/nginx/sites-available/{{ grafana_subdomain }}.{{ domain_name }}
