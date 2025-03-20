@@ -1,0 +1,72 @@
+---
+- name: Install Grafana
+  hosts: grafana
+  become: true
+  tasks:
+    - name: Add monitoring user group
+      ansible.builtin.group:
+        name: "{{ grafana_user_group }}"
+        state: present
+
+    - name: Add grafana user in grafana group
+      ansible.builtin.user:
+        name: "{{ grafana_user }}"
+        group: "{{ grafana_user_group }}"
+        shell: /usr/sbin/nologin
+        system: true
+
+    - name: Add APT key
+      ansible.builtin.apt_key:
+        url: "{{ grafana_gpg_key }}"
+        state: present
+
+    - name: Add Grafana APT repository
+      ansible.builtin.apt_repository:
+        repo: "deb {{ grafana_apt_repository }} stable main"
+        state: present
+
+    - name: Update APT cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Grafana
+      ansible.builtin.apt:
+        name: grafana
+        state: present
+
+    - name: Change owner for systemd file
+      ansible.builtin.file:
+        path: /lib/systemd/system/grafana-server.service
+        owner: "{{ grafana_user }}"
+        group: "{{ grafana_user_group }}"
+        mode: '0644'
+
+    - name: Change binary owner
+      ansible.builtin.file:
+        path: /usr/share/grafana
+        owner: "{{ grafana_user }}"
+        group: "{{ grafana_user_group }}"
+        mode: '0750'
+
+    - name: Start and enable Grafana service
+      ansible.builtin.systemd:
+        name: grafana-server
+        enabled: true
+        state: started
+
+    - name: Create nginx config file for grafana
+      ansible.builtin.template:
+        src: ./templates/nginx.j2
+        dest: /etc/nginx/sites-available/{{ grafana_subdomain }}.{{ domain_name }}
+        mode: '0644'
+
+    - name: Create a symbolic link
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/{{ grafana_subdomain }}.{{ domain_name }}
+        dest: /etc/nginx/sites-enabled/{{ grafana_subdomain }}.{{ domain_name }}
+        state: link
+
+    - name: Restart Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
