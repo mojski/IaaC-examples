@@ -1,0 +1,24 @@
+[all:vars]
+grafana_user_group=grafana
+# ssl
+certificate_path=/etc/ssl/private/*.pem
+certificate_key_path=/etc/ssl/private/*.key
+
+[grafana]
+13.74.123.160 ansible_ssh_user=mojski
+
+[grafana:vars]
+grafana_apt_repository=https://packages.grafana.com/oss/deb
+grafana_gpg_key=https://packages.grafana.com/gpg.key
+grafana_user=grafana
+domain_name=lucek.online
+grafana_subdomain=monitor
+
+[nodes]
+13.74.123.160 ansible_ssh_user=mojski
+
+[nodes:vars]
+prometheus_user=prometheus
+node_exporter_user=node_exporter
+prometheus_release=https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz
+mysql_exporter_version=0.17.2/
